@@ -47,7 +47,7 @@
     font-size:19px; font-weight:700; line-height:1.35; box-shadow:var(--shadow); min-height:56px;
     display:flex; align-items:center; justify-content:center; text-align:center; position:relative; margin-bottom:26px;
   }
-  #bubble .en{direction:ltr; unicode-bidi:embed; color:var(--coral); font-weight:900; letter-spacing:.5px;}
+  #bubble .en{direction:ltr; unicode-bidi:isolate; color:var(--coral); font-weight:900; letter-spacing:.5px; margin:0 3px; padding:0 3px;}
   .owl{position:relative; width:96px; height:112px; flex:0 0 96px;}
   .owl .body{position:absolute; inset:8px 6px 0 6px; background:linear-gradient(180deg,#B990E0,#8B5FC7); border-radius:48% 48% 46% 46%/58% 58% 42% 42%; box-shadow:inset 0 -10px 0 rgba(0,0,0,.08);}
   .owl .belly{position:absolute; left:50%; bottom:6px; transform:translateX(-50%); width:56px; height:52px; background:#F3E8FF; border-radius:50% 50% 46% 46%;}
@@ -107,6 +107,8 @@
   #startWrap .owlBig{transform:scale(1.5); margin:26px 0 30px;}
   .title{font-size:30px; font-weight:900; margin:0;}
   .subtitle{font-size:18px; font-weight:700; opacity:.75; margin:0;}
+  .navrow{margin-top:14px; display:flex; gap:10px; justify-content:center;}
+  .navlink{display:inline-block; background:#fff; border-radius:999px; padding:10px 18px; font-weight:800; color:var(--ink); text-decoration:none; box-shadow:var(--shadow); font-size:15px;}
   details.parent{background:rgba(255,255,255,.7); border-radius:16px; padding:8px 14px; font-size:14px; max-width:340px; box-shadow:var(--shadow);}
   details.parent summary{cursor:pointer; font-weight:800;}
   details.parent p{margin:8px 0 4px; line-height:1.5; font-weight:500;}
@@ -416,6 +418,7 @@ function startScreen() {
       <p class="title">האנגלית של מיה</p>
       <p class="subtitle">שיעור 2 · צבעים 🎨</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
+      <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור של רבע שעה עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>
@@ -596,7 +599,7 @@ async function finale(s) {
       <p class="title">כל הכבוד ${MIA}!</p>
       <p class="subtitle">סיימת שיעור שלם באנגלית!</p>
       <button class="cta coral" id="againBtn">🔁 עוד פעם!</button>
-      <p class="hint">שיעור 2 יגיע בעוד שבוע 💌</p>
+      <a class="navlink" href="index.html" style="margin-top:12px">🐶 שיעור 1: חיות</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
