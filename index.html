@@ -165,122 +165,111 @@
 "use strict";
 const MIA = "מִיָּה";
 
-/* ---------- speech engine (adapted from colorful-hebrew-words) ---------- */
+/* ---------- speech engine (device TTS, fallback only) ---------- */
 const Speech = (() => {
-  let utterRef = null, speakTimer, resolveCurrent = null, voices = [];
-  let enVoice = null, heVoice = null;
+  let utterRef = null, speakTimer, resolveCurrent = null, enVoice = null, heVoice = null;
   let lastGesture = 0, firstSpeakDone = false, warmedUp = false, lastUnlock = 0;
   const hasSynth = () => typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
-
   function pickVoices() {
     if (!hasSynth()) return;
-    voices = window.speechSynthesis.getVoices();
+    const voices = window.speechSynthesis.getVoices();
     const en = voices.filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("en-us"));
     enVoice = en.find(v => v.localService) || en[0] || null;
     const he = voices.filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("he"));
     heVoice = he.find(v => v.localService) || he[0] || null;
   }
-  if (hasSynth()) {
-    pickVoices();
-    window.speechSynthesis.addEventListener?.("voiceschanged", pickVoices);
-  }
+  if (hasSynth()) { pickVoices(); window.speechSynthesis.addEventListener?.("voiceschanged", pickVoices); }
   ["pointerdown", "touchstart", "keydown", "click"].forEach(ev =>
     window.addEventListener(ev, () => { lastGesture = Date.now(); }, { capture: true, passive: true }));
-
   function warmUp() {
-    if (warmedUp || !hasSynth()) return;
-    warmedUp = true;
+    if (warmedUp || !hasSynth()) return; warmedUp = true;
     try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; window.speechSynthesis.speak(u); } catch (e) {}
   }
   if (hasSynth()) window.addEventListener("pointerdown", warmUp, { once: true, capture: true });
-
   function unlock() {
     if (!hasSynth() || Date.now() - lastUnlock < 1500) return;
     lastUnlock = Date.now();
-    try {
-      const s = window.speechSynthesis;
-      if (s.speaking || s.pending) return;
-      const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; s.speak(u);
-    } catch (e) {}
+    try { const s = window.speechSynthesis; if (s.speaking || s.pending) return;
+      const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; s.speak(u); } catch (e) {}
   }
-
-  let fallbackAudio = null;
-  function ensureNoReferrer() {
-    if (document.querySelector('meta[name="referrer"][content="no-referrer"]')) return;
-    const m = document.createElement("meta"); m.name = "referrer"; m.content = "no-referrer"; document.head.appendChild(m);
-  }
-  function speakFallback(text, lang) {
-    return new Promise(resolve => {
-      try {
-        if (typeof Audio === "undefined") return resolve();
-        ensureNoReferrer();
-        if (fallbackAudio) { fallbackAudio.onerror = null; fallbackAudio.onended = null; fallbackAudio.pause(); }
-        const tl = lang === "he" ? "iw" : "en";
-        const a = new Audio("https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + tl + "&ttsspeed=0.5&q=" + encodeURIComponent(text));
-        fallbackAudio = a;
-        let done = false;
-        const finish = () => { if (!done) { done = true; resolve(); } };
-        a.onended = finish; a.onerror = finish;
-        setTimeout(finish, Math.max(4000, text.length * 320));
-        const p = a.play();
-        if (p && p.catch) p.catch(finish);
-      } catch (e) { resolve(); }
-    });
-  }
-
-  // say(text, lang): speaks; resolves when done (or on timeout so the lesson never stalls)
   function say(text, lang) {
     lang = lang || "he";
-    if (!hasSynth()) return speakFallback(text, lang);
+    if (!hasSynth()) return Promise.resolve();
     const synth = window.speechSynthesis;
     if (resolveCurrent) { const r = resolveCurrent; resolveCurrent = null; r(); }
     clearTimeout(speakTimer);
-    const firstDelay = firstSpeakDone ? 0 : 400;
-    firstSpeakDone = true;
+    const firstDelay = firstSpeakDone ? 0 : 400; firstSpeakDone = true;
     return new Promise(resolve => {
       const run = (attempt) => {
         try {
           if (synth.paused) synth.resume();
           const u = new SpeechSynthesisUtterance(text);
           u.lang = lang === "he" ? "he-IL" : "en-US";
-          u.rate = lang === "he" ? 0.92 : 0.5;
+          u.rate = lang === "he" ? 0.8 : 0.5;
           const v = lang === "he" ? heVoice : enVoice;
           if (v) u.voice = v;
           let started = false, done = false;
-          const finish = () => {
-            if (done) return; done = true;
-            if (utterRef === u) utterRef = null;
-            if (resolveCurrent) { resolveCurrent = null; }
-            resolve();
-          };
-          u.onstart = () => { started = true; };
-          u.onend = finish; u.onerror = finish;
+          const finish = () => { if (done) return; done = true; if (utterRef === u) utterRef = null; if (resolveCurrent) resolveCurrent = null; resolve(); };
+          u.onstart = () => { started = true; }; u.onend = finish; u.onerror = finish;
           utterRef = u; resolveCurrent = finish;
           synth.speak(u);
-          // estimate duration for the stall timeout
-          const est = Math.max(2500, text.length * (lang === "he" ? 170 : 260)) + 1500;
           speakTimer = setTimeout(() => {
-            if (!started && utterRef === u) {
-              synth.cancel(); utterRef = null;
-              if (attempt < 1) speakTimer = setTimeout(() => run(attempt + 1), 80);
-              else { speakFallback(text, lang).then(finish); }
-            } else if (utterRef === u) {
-              // started but never ended within a generous window: let it finish quietly
-              speakTimer = setTimeout(() => { if (utterRef === u) finish(); }, est);
-            }
-          }, attempt < 1 ? 1500 : est);
-        } catch (e) { speakFallback(text, lang).then(resolve); }
+            if (!started && utterRef === u) { synth.cancel(); utterRef = null;
+              if (attempt < 1) speakTimer = setTimeout(() => run(attempt + 1), 80); else finish();
+            } else if (utterRef === u) { finish(); }
+          }, attempt < 1 ? 1500 : Math.max(6000, text.length * 300));
+        } catch (e) { resolve(); }
       };
-      if (synth.speaking || synth.pending || synth.paused) {
-        synth.cancel();
-        speakTimer = setTimeout(() => run(0), Math.max(80, firstDelay));
-      } else if (firstDelay) {
-        speakTimer = setTimeout(() => run(0), firstDelay);
-      } else run(0);
+      if (synth.speaking || synth.pending || synth.paused) { synth.cancel(); speakTimer = setTimeout(() => run(0), Math.max(80, firstDelay)); }
+      else if (firstDelay) speakTimer = setTimeout(() => run(0), firstDelay);
+      else run(0);
     });
   }
   return { say, unlock, warmUp };
 })();
+
+/* ---------- pre-recorded teacher audio (natural voice) ---------- */
+const Player = (() => {
+  const cache = {};
+  let current = null, resolveCurrent = null;
+  function el(key) {
+    if (!cache[key]) { const a = new Audio("audio/" + key + ".mp3"); a.preload = "auto"; cache[key] = a; }
+    return cache[key];
+  }
+  function unlock() {
+    // warm the media engine inside the first user gesture so later plays are allowed
+    try { const a = el("he/intro1"); a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
+  }
+  function play(key) {
+    return new Promise(resolve => {
+      stop();
+      const a = el(key);
+      let done = false;
+      const finish = (ok) => { if (done) return; done = true; if (current === a) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
+      current = a; resolveCurrent = finish;
+      a.onended = () => finish(true);
+      a.onerror = () => finish(false);
+      a.currentTime = 0;
+      const p = a.play();
+      if (p && p.catch) p.catch(() => finish(false));
+      setTimeout(() => finish(false), 20000); // never stall the lesson
+    });
+  }
+  function stop() {
+    if (resolveCurrent) { const r = resolveCurrent; resolveCurrent = null; }
+    if (current) { try { current.onended = null; current.onerror = null; current.pause(); current.currentTime = 0; } catch (e) {} current = null; }
+  }
+  return { play, unlock, stop };
+})();
+
+/* say a lesson line: pre-recorded clip first, device TTS as fallback */
+async function sayLine(line) {
+  if (line.key) {
+    const ok = await Player.play(line.key);
+    if (ok) return;
+  }
+  await Speech.say(line.t, line.lang);
+}
 
 /* ---------- tiny WebAudio chimes ---------- */
 const Sfx = (() => {
@@ -307,21 +296,27 @@ const Sfx = (() => {
 
 /* ---------- lesson data ---------- */
 const ANIMALS = [
-  { en: "dog",    he: "כלב",   emo: "🐶", color: "#FFD93D" },
-  { en: "cat",    he: "חתול",  emo: "🐱", color: "#FF9F68" },
-  { en: "bird",   he: "ציפור", emo: "🐦", color: "#6BCBFF" },
-  { en: "fish",   he: "דג",    emo: "🐠", color: "#7FE3C3" },
-  { en: "rabbit", he: "ארנב",  emo: "🐰", color: "#C9A7FF" }
+  { en: "dog",    he: "כלב",   heThis: "זה כלב",    emo: "🐶", color: "#FFD93D" },
+  { en: "cat",    he: "חתול",  heThis: "זה חתול",   emo: "🐱", color: "#FF9F68" },
+  { en: "bird",   he: "ציפור", heThis: "זאת ציפור", emo: "🐦", color: "#6BCBFF" },
+  { en: "fish",   he: "דג",    heThis: "זה דג",     emo: "🐠", color: "#7FE3C3" },
+  { en: "rabbit", he: "ארנב",  heThis: "זה ארנב",   emo: "🐰", color: "#C9A7FF" }
 ];
-const PRAISES = ["כל הכבוד " + MIA + "!", "מעולה!", "וואו, יופי!", "את אלופה!", "נהדר!"];
+const PRAISES = [
+  { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
+  { key: "he/praise2", t: "מעולה!", lang: "he" },
+  { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
+  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise5", t: "נהדר!", lang: "he" }
+];
 
 /* ---------- helpers ---------- */
 const stage = document.getElementById("stage");
 const bubble = document.getElementById("bubble");
 const owl = document.getElementById("owl");
 const repeatBtn = document.getElementById("repeatBtn");
-let session = 0;            // bump to abort pending speech chains
-let lastPrompt = null;      // {text, lang} or [lines] for the repeat button
+let session = 0;
+let lastPrompt = null;
 let stars = 0;
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -344,13 +339,12 @@ function addStar(fromEl) {
   setTimeout(() => { document.getElementById("starCount").textContent = stars; }, fromEl ? 650 : 0);
 }
 async function speakLines(lines, s) {
-  // lines: [{t, lang, html, pauseAfter}]
   for (const line of lines) {
     if (!alive(s)) return;
     if (line.html !== undefined) setBubble(line.html);
     lastPrompt = line;
     owl.classList.add("talking");
-    await Speech.say(line.t, line.lang);
+    await sayLine(line);
     owl.classList.remove("talking");
     if (!alive(s)) return;
     if (line.pauseAfter) await sleep(line.pauseAfter);
@@ -375,15 +369,14 @@ function confetti(n) {
 
 repeatBtn.addEventListener("click", () => {
   if (!lastPrompt) return;
-  Speech.unlock();
+  Speech.unlock(); Player.unlock();
   owl.classList.add("talking");
-  Speech.say(lastPrompt.t, lastPrompt.lang).then(() => owl.classList.remove("talking"));
+  sayLine(lastPrompt).then(() => owl.classList.remove("talking"));
 });
 
 /* ---------- screens ---------- */
 function startScreen() {
   session++;
-  setSeg; // noop
   setBubble("שלום! אני לֵילִי 🦉");
   lastPrompt = { t: "שלום! אני לילי!", lang: "he" };
   stage.innerHTML = `
@@ -405,7 +398,7 @@ function startScreen() {
         <p>שיעור של רבע שעה עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>
       </details>
     </div>`;
-  document.getElementById("startBtn").addEventListener("click", () => { Sfx.tap(); Speech.unlock(); intro(); });
+  document.getElementById("startBtn").addEventListener("click", () => { Sfx.tap(); Speech.unlock(); Player.unlock(); intro(); });
 }
 
 async function intro() {
@@ -414,9 +407,9 @@ async function intro() {
   repeatBtn.style.visibility = "visible";
   stage.innerHTML = "";
   await speakLines([
-    { t: "היי " + MIA + "! שמחה לראות אותך!", lang: "he", html: "היי " + MIA + "! 👋", pauseAfter: 300 },
-    { t: "אני לילי הינשוף, והיום נלמד חיות באנגלית!", lang: "he", html: "היום לומדים: חיות! 🐶🐱🐦", pauseAfter: 500 },
-    { t: "מוכנה? בואי נתחיל!", lang: "he", html: "מוכנה? בואי נתחיל! 🎉" }
+    { key: "he/intro1", t: "היי " + MIA + "! שמחה לראות אותך!", lang: "he", html: "היי " + MIA + "! 👋", pauseAfter: 300 },
+    { key: "he/intro2", t: "אני לילי הינשוף, והיום נלמד חיות באנגלית!", lang: "he", html: "היום לומדים: חיות! 🐶🐱🐦", pauseAfter: 500 },
+    { key: "he/intro3", t: "מוכנה? בואי נתחיל!", lang: "he", html: "מוכנה? בואי נתחיל! 🎉" }
   ], s);
   if (!alive(s)) return;
   teachWord(0, s);
@@ -436,31 +429,30 @@ async function teachWord(i, s) {
   card.addEventListener("click", () => {
     Speech.unlock(); Sfx.tap();
     owl.classList.add("talking");
-    Speech.say(a.en, "en").then(() => owl.classList.remove("talking"));
+    sayLine({ key: "en/" + a.en, t: a.en, lang: "en" }).then(() => owl.classList.remove("talking"));
   });
   await speakLines([
-    { t: "זה " + a.he + "!", lang: "he", html: "זה <b>" + a.he + "</b>! " + a.emo, pauseAfter: 200 },
-    { t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">' + a.en + '</span>', pauseAfter: 150 },
-    { t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 350 },
-    { t: a.en + "!", lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 250 },
-    { t: "גם את אמרי", lang: "he", html: "גם את אמרי בקול! 📢", pauseAfter: 100 },
-    { t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 📢' }
+    { key: "he/this_" + a.en, t: a.heThis + "!", lang: "he", html: a.heThis + "! " + a.emo, pauseAfter: 200 },
+    { key: "he/ineng", t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">' + a.en + '</span>', pauseAfter: 150 },
+    { key: "en/" + a.en, t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 350 },
+    { key: "en/" + a.en, t: a.en + "!", lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 250 },
+    { key: "he/yourturn", t: "גם את אמרי בקול!", lang: "he", html: "גם את אמרי בקול! 📢", pauseAfter: 100 },
+    { key: "en/" + a.en, t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 📢' }
   ], s);
   if (!alive(s)) return;
-  await sleep(2400); // let Mia say it out loud
+  await sleep(2400);
   if (!alive(s)) return;
   owl.classList.add("talking");
-  await Speech.say(PRAISES[Math.floor(Math.random() * PRAISES.length)], "he");
+  await sayLine(PRAISES[Math.floor(Math.random() * PRAISES.length)]);
   owl.classList.remove("talking");
   if (!alive(s)) return;
-  // movement moments for bird and rabbit
   if (a.en === "bird") {
-    await speakLines([{ t: "קומי קומי! תפרפרי עם הידיים כמו ציפור!", lang: "he", html: "קומי ותפרפרי כמו ציפור! 🐦", pauseAfter: 0 }], s);
+    await speakLines([{ key: "he/move_bird", t: "קומי קומי! תפרפרי עם הידיים כמו ציפור!", lang: "he", html: "קומי ותפרפרי כמו ציפור! 🐦" }], s);
     if (!alive(s)) return;
     await sleep(3500);
   }
   if (a.en === "rabbit") {
-    await speakLines([{ t: "קומי קומי! תקפצי כמו ארנב! קפוץ קפוץ!", lang: "he", html: "קומי ותקפצי כמו ארנב! 🐰", pauseAfter: 0 }], s);
+    await speakLines([{ key: "he/move_rabbit", t: "קומי קומי! תקפצי כמו ארנב! קפוץ קפוץ!", lang: "he", html: "קומי ותקפצי כמו ארנב! 🐰" }], s);
     if (!alive(s)) return;
     await sleep(3500);
   }
@@ -477,8 +469,8 @@ async function game1Intro(s) {
   setSeg("seg-g1");
   stage.innerHTML = "";
   await speakLines([
-    { t: "וואו, למדת חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
-    { t: "עכשיו משחק! אני אשאל, ואת תלחצי על התמונה הנכונה!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על התמונה הנכונה" }
+    { key: "he/g1intro1", t: "וואו, למדת חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על התמונה הנכונה!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על התמונה הנכונה" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 1, shuffle(ANIMALS), game1Outro);
@@ -486,7 +478,7 @@ async function game1Intro(s) {
 
 async function game1Outro(s) {
   await speakLines([
-    { t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את החיה!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
+    { key: "he/g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את החיה!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 2, shuffle(ANIMALS), recap);
@@ -507,15 +499,15 @@ function gameRound(s, gameNo, order, doneCb) {
     if (!alive(s)) return;
     if (gameNo === 1) {
       await speakLines([
-        { t: "איפה ה", lang: "he", html: 'איפה ה<span class="en">' + target.en + '</span>?', pauseAfter: 50 },
-        { t: target.en + "?", lang: "en", html: 'איפה ה<span class="en">' + target.en + '</span>?' }
+        { key: "he/where", t: "איפה ה", lang: "he", html: 'איפה ה<span class="en">' + target.en + '</span>?', pauseAfter: 50 },
+        { key: "en/" + target.en, t: target.en + "?", lang: "en", html: 'איפה ה<span class="en">' + target.en + '</span>?' }
       ], s);
     } else {
-      await speakLines([{ t: target.en, lang: "en", html: "👂 מה שמעת?" }], s);
+      await speakLines([{ key: "en/" + target.en, t: target.en, lang: "en", html: "👂 מה שמעת?" }], s);
       if (!alive(s)) return;
       await sleep(300);
       if (!alive(s)) return;
-      owl.classList.add("talking"); await Speech.say(target.en, "en"); owl.classList.remove("talking");
+      owl.classList.add("talking"); await sayLine({ key: "en/" + target.en, t: target.en, lang: "en" }); owl.classList.remove("talking");
     }
     if (!alive(s)) return;
     let locked = false;
@@ -528,7 +520,7 @@ function gameRound(s, gameNo, order, doneCb) {
           el.classList.add("right");
           Sfx.good(); Sfx.star(); cheer();
           addStar(el);
-          await speakLines([{ t: PRAISES[Math.floor(Math.random() * PRAISES.length)], lang: "he", html: "🌟 " + el.querySelector(".emo").textContent + ' <span class="en">' + target.en + '</span>!' }], s);
+          await speakLines([Object.assign({}, PRAISES[Math.floor(Math.random() * PRAISES.length)], { html: "🌟 " + el.querySelector(".emo").textContent + ' <span class="en">' + target.en + '</span>!' })], s);
           if (!alive(s)) return;
           round++;
           play();
@@ -537,11 +529,11 @@ function gameRound(s, gameNo, order, doneCb) {
           el.classList.add("wrong");
           Sfx.wrong();
           stage.querySelector(".optgrid").classList.add("shake");
-          await speakLines([{ t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
+          await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
           setTimeout(() => { stage.querySelector(".optgrid")?.classList.remove("shake"); locked = false; }, 300);
           if (!alive(s)) return;
-          if (gameNo === 1) { owl.classList.add("talking"); await Speech.say("איפה ה", "he"); await Speech.say(target.en + "?", "en"); owl.classList.remove("talking"); }
-          else { owl.classList.add("talking"); await Speech.say(target.en, "en"); owl.classList.remove("talking"); }
+          if (gameNo === 1) { owl.classList.add("talking"); await sayLine({ key: "he/where", t: "איפה ה", lang: "he" }); await sayLine({ key: "en/" + target.en, t: target.en + "?", lang: "en" }); owl.classList.remove("talking"); }
+          else { owl.classList.add("talking"); await sayLine({ key: "en/" + target.en, t: target.en, lang: "en" }); owl.classList.remove("talking"); }
         }
       });
     });
@@ -553,7 +545,7 @@ async function recap(s) {
   setSeg("seg-end");
   stage.innerHTML = `<div class="parade">${ANIMALS.map(a =>
     `<div class="pitem" id="p-${a.en}"><div class="emo">${a.emo}</div><div class="word">${a.en}</div></div>`).join("")}</div>`;
-  await speakLines([{ t: "בואי נזכור מה למדנו היום!", lang: "he", html: "מה למדנו היום? 🌈", pauseAfter: 300 }], s);
+  await speakLines([{ key: "he/recap", t: "בואי נזכור מה למדנו היום!", lang: "he", html: "מה למדנו היום? 🌈", pauseAfter: 300 }], s);
   for (const a of ANIMALS) {
     if (!alive(s)) return;
     document.querySelectorAll(".pitem").forEach(p => p.classList.remove("now"));
@@ -561,7 +553,7 @@ async function recap(s) {
     el.classList.add("now");
     setBubble('<span class="en">' + a.en + '</span> - ' + a.he + ' ' + a.emo);
     owl.classList.add("talking");
-    await Speech.say(a.en, "en");
+    await sayLine({ key: "en/" + a.en, t: a.en, lang: "en" });
     owl.classList.remove("talking");
     if (!alive(s)) return;
     await sleep(500);
@@ -585,9 +577,9 @@ async function finale(s) {
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
-    { t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
-    { t: "למדת: dog, cat, bird, fish, rabbit!", lang: "he", html: "dog · cat · bird · fish · rabbit", pauseAfter: 300 },
-    { t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/finale2", t: "למדת היום חמש מילים חדשות באנגלית!", lang: "he", html: "dog · cat · bird · fish · rabbit", pauseAfter: 300 },
+    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
   ], s);
   if (!alive(s)) return;
   document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
