@@ -161,6 +161,7 @@
   <div id="stage"></div>
 </div>
 
+<script src="audio.js"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -232,18 +233,36 @@ const Speech = (() => {
 const Player = (() => {
   const cache = {};
   let current = null, resolveCurrent = null;
+  const urls = {};
+  function clipUrl(key) {
+    if (!urls[key]) {
+      if (typeof AUDIO === "undefined" || !AUDIO[key]) return null;
+      const bin = atob(AUDIO[key]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      urls[key] = URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
+    }
+    return urls[key];
+  }
   function el(key) {
-    if (!cache[key]) { const a = new Audio("audio/" + key + ".mp3"); a.preload = "auto"; cache[key] = a; }
+    if (!cache[key]) {
+      const u = clipUrl(key);
+      if (!u) return null;
+      const a = new Audio(u);
+      a.preload = "auto";
+      cache[key] = a;
+    }
     return cache[key];
   }
   function unlock() {
     // warm the media engine inside the first user gesture so later plays are allowed
-    try { const a = el("he/intro1"); a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
+    try { const a = el("he/intro1"); if (a) a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
   }
   function play(key) {
     return new Promise(resolve => {
       stop();
       const a = el(key);
+      if (!a) { resolve(false); return; }
       let done = false;
       const finish = (ok) => { if (done) return; done = true; if (current === a) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
       current = a; resolveCurrent = finish;
