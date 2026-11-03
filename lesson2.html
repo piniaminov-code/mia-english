@@ -264,14 +264,27 @@ const Player = (() => {
       const u = clipUrl(key);
       if (!u) { resolve(false); return; }
       stop(true); // a new play supersedes the current one (tap on speaker / picture)
-      let done = false;
+      let done = false, attempts = 0, retryTimer = null;
       const finish = (ok) => { if (done) return; done = true; if (current === player) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
-      current = player; resolveCurrent = finish;
-      player.onended = () => finish(true);
-      player.onerror = () => finish(false);
-      try { player.src = u; player.currentTime = 0; } catch (e) {}
-      const p = player.play();
-      if (p && p.catch) p.catch(() => finish(false));
+      // iOS can transiently reject a play that starts while the answer chime's WebAudio
+      // tones hold the audio session; retry on the same blessed element before giving up
+      const retryOrFail = (why) => {
+        if (done || retryTimer) return;
+        window.__audioFail = { key: key, via: why, attempt: attempts, at: Date.now() };
+        if (attempts < 3) retryTimer = setTimeout(() => { retryTimer = null; attempt(); }, 350);
+        else finish(false);
+      };
+      const attempt = () => {
+        if (done) return;
+        attempts++;
+        current = player; resolveCurrent = finish;
+        player.onended = () => finish(true);
+        player.onerror = () => retryOrFail("error");
+        try { player.src = u; } catch (e) {}
+        const p = player.play();
+        if (p && p.catch) p.catch((e) => retryOrFail(String(e && e.name || e)));
+      };
+      attempt();
       setTimeout(() => finish(false), 20000); // never stall the lesson
     });
   }
