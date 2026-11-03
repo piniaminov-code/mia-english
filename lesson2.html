@@ -262,7 +262,7 @@ const Player = (() => {
   }
   function unlock() {
     // warm the media engine inside the first user gesture so later plays are allowed
-    try { const a = el("he/intro1"); if (a) a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {}); } catch (e) {}
+    try { const u = clipUrl("he/intro1"); if (u) { const a = new Audio(u); a.play().then(() => { a.pause(); }).catch(() => {}); } } catch (e) {}
   }
   function play(key) {
     return new Promise(resolve => {
