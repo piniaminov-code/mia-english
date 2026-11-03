@@ -168,7 +168,7 @@
 <script src="audio2.js?v=438431e"></script>
 <script src="audio3.js?v=438431e"></script>
 <script src="audio4.js?v=438431e"></script>
-<script src="audio5.js?v=438431e"></script>
+<script src="audio5.js?v=7f3c9d2"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -473,8 +473,8 @@ async function teachWord(i, s) {
     { key: "he/ineng", t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">' + a.en + '</span>', pauseAfter: 150 },
     { key: "en/" + a.en, t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 350 },
     { key: "en/" + a.en, t: a.en + "!", lang: "en", html: '<span class="en">' + a.en + '</span> 🗣️', pauseAfter: 250 },
-    { key: "he/yourturn", t: "גם את אמרי בקול!", lang: "he", html: "גם את אמרי בקול! 📢", pauseAfter: 100 },
-    { key: "en/" + a.en, t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 📢' }
+    { key: "he/yourturn", t: "עכשיו תורך, מיה!", lang: "he", html: "עכשיו תורך, מיה! 📢", pauseAfter: 100 },
+    { key: "en_slow/" + a.en, t: a.en, lang: "en", html: '<span class="en">' + a.en + '</span> 📢' }
   ], s);
   if (!alive(s)) return;
   await sleep(2400);
