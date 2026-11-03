@@ -163,11 +163,11 @@
   <div id="stage"></div>
 </div>
 
-<script src="l2audio1.js"></script>
-<script src="l2audio2.js"></script>
-<script src="l2audio3.js"></script>
-<script src="l2audio4.js"></script>
-<script src="l2audio5.js"></script>
+<script src="l2audio1.js?v=438431e"></script>
+<script src="l2audio2.js?v=438431e"></script>
+<script src="l2audio3.js?v=438431e"></script>
+<script src="l2audio4.js?v=438431e"></script>
+<script src="l2audio5.js?v=438431e"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -237,9 +237,13 @@ const Speech = (() => {
 
 /* ---------- pre-recorded teacher audio (natural voice) ---------- */
 const Player = (() => {
-  const cache = {};
   let current = null, resolveCurrent = null;
   const urls = {};
+  // one shared element: iOS Safari blesses playback once per user gesture; per-key
+  // elements played later (outside the gesture) can fail and trigger the TTS fallback
+  const player = new Audio();
+  player.preload = "auto";
+  player.playsInline = true;
   function clipUrl(key) {
     if (!urls[key]) {
       if (typeof AUDIO === "undefined" || !AUDIO[key]) return null;
@@ -250,39 +254,29 @@ const Player = (() => {
     }
     return urls[key];
   }
-  function el(key) {
-    if (!cache[key]) {
-      const u = clipUrl(key);
-      if (!u) return null;
-      const a = new Audio(u);
-      a.preload = "auto";
-      cache[key] = a;
-    }
-    return cache[key];
-  }
   function unlock() {
-    // warm the media engine inside the first user gesture so later plays are allowed
-    try { const u = clipUrl("he/intro1"); if (u) { const a = new Audio(u); a.play().then(() => { a.pause(); }).catch(() => {}); } } catch (e) {}
+    // warm the media engine inside the first user gesture, muted so it never doubles the clip
+    try { const u = clipUrl("he/intro1"); if (u) { const a = new Audio(u); a.muted = true; a.play().then(() => { a.pause(); }).catch(() => {}); } } catch (e) {}
   }
   function play(key) {
     return new Promise(resolve => {
+      const u = clipUrl(key);
+      if (!u) { resolve(false); return; }
       stop();
-      const a = el(key);
-      if (!a) { resolve(false); return; }
       let done = false;
-      const finish = (ok) => { if (done) return; done = true; if (current === a) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
-      current = a; resolveCurrent = finish;
-      a.onended = () => finish(true);
-      a.onerror = () => finish(false);
-      a.currentTime = 0;
-      const p = a.play();
+      const finish = (ok) => { if (done) return; done = true; if (current === player) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
+      current = player; resolveCurrent = finish;
+      player.onended = () => finish(true);
+      player.onerror = () => finish(false);
+      try { player.src = u; player.currentTime = 0; } catch (e) {}
+      const p = player.play();
       if (p && p.catch) p.catch(() => finish(false));
       setTimeout(() => finish(false), 20000); // never stall the lesson
     });
   }
   function stop() {
-    if (resolveCurrent) { const r = resolveCurrent; resolveCurrent = null; }
-    if (current) { try { current.onended = null; current.onerror = null; current.pause(); current.currentTime = 0; } catch (e) {} current = null; }
+    if (resolveCurrent) { resolveCurrent = null; }
+    if (current) { try { player.onended = null; player.onerror = null; player.pause(); } catch (e) {} current = null; }
   }
   return { play, unlock, stop };
 })();

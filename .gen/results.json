@@ -1,0 +1,284 @@
+{
+ "shared:he/intro3": {
+  "text": "מוכנה? בואי נתחיל!",
+  "heard": "מוכנהבואינתחיל",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/ineng": {
+  "text": "באנגלית אומרים:",
+  "heard": "באנגליתאומרים",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/yourturn": {
+  "text": "גם את אמרי בקול!",
+  "heard": "גםאתעמריבכול",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/g1intro1": {
+  "text": "וואו, למדת חמש מילים חדשות!",
+  "heard": "וואולמדתחמשמיליםחדשות",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/where": {
+  "text": "איפה ה",
+  "heard": "איפההא",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/wrong": {
+  "text": "אופסי, זה לא זה. נסי שוב!",
+  "heard": "אופסיזהלאזהנסישוב",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/recap": {
+  "text": "בואי נזכור מה למדנו היום!",
+  "heard": "בואינזכורמהלמדנוהיום",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/praise1": {
+  "text": "כל הכבוד מִיָּה!",
+  "heard": "כלהכבודמיה",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/praise2": {
+  "text": "מעולה!",
+  "heard": "מעולה",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/praise3": {
+  "text": "וואו, יופי!",
+  "heard": "וואויופי",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/praise4": {
+  "text": "את אלופה!",
+  "heard": "אתאלופה",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/praise5": {
+  "text": "נהדר!",
+  "heard": "נהדר",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/finale1": {
+  "text": "כל הכבוד מִיָּה! סיימת שיעור שלם באנגלית!",
+  "heard": "כלהכבודמיהסיימתשיעורשלםבאנגלית",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/finale2": {
+  "text": "למדת היום חמש מילים חדשות באנגלית!",
+  "heard": "למדתהיוםחמשמיליםחדשותבאנגלית",
+  "takes": 1,
+  "ok": true
+ },
+ "shared:he/finale3": {
+  "text": "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!",
+  "heard": "אתאלופתאנגליתנתראהבשיעורהבאבייביי",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/intro1": {
+  "text": "היי מִיָּה! שְׂמֵחָה לראות אותך!",
+  "heard": "היימיהשמחהלראותאותך",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/intro2": {
+  "text": "אני לֵילִי הינשוף, והיום נלמד חיות באנגלית!",
+  "heard": "אניליליהנשוףוהיוםנלמדחיותבאנגלית",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/move_bird": {
+  "text": "קומי קומי! תפרפרי עם הידיים כמו ציפור!",
+  "heard": "קומיקומיתפרפריעםהידייםכמוציפור",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/move_rabbit": {
+  "text": "קומי קומי! תקפצי כמו ארנב! קפוץ קפוץ!",
+  "heard": "קומיקומיתקפציכמוארנבקפוץקפוץ",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/g1intro2": {
+  "text": "עכשיו משחק! אני אשאל, ואת תלחצי על התמונה הנכונה!",
+  "heard": "עכשיומשחקאניאשאלואתתלחציעלהתמונההנכונה",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/g2intro": {
+  "text": "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את החיה!",
+  "heard": "כלהכבודעכשיומשחקאחרוןבלירמזיםאניאומרתמילהואתמוצאתאתהחיה",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/this_dog": {
+  "text": "זה כלב",
+  "heard": "זהכלב",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/this_cat": {
+  "text": "זה חתול",
+  "heard": "זהחתול",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/this_bird": {
+  "text": "זאת ציפור",
+  "heard": "זאתציפור",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/this_fish": {
+  "text": "זה דג",
+  "heard": "זהדג",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:he/this_rabbit": {
+  "text": "זה ארנב",
+  "heard": "זהארנב",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:en/dog": {
+  "text": "dog",
+  "heard": "Dog",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:en/cat": {
+  "text": "cat",
+  "heard": "Cat",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:en/bird": {
+  "text": "bird",
+  "heard": "Bird",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:en/fish": {
+  "text": "fish",
+  "heard": "Fish",
+  "takes": 1,
+  "ok": true
+ },
+ "l1:en/rabbit": {
+  "text": "rabbit",
+  "heard": "Rabbit",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/intro1": {
+  "text": "היי מִיָּה! שְׂמֵחָה לראות אותך שוב!",
+  "heard": "היימיהשמחהלראותאותךשוב",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/intro2": {
+  "text": "אני לֵילִי הינשוף, והיום נלמד צבעים באנגלית!",
+  "heard": "אניליליהנשוףוהיוםנלמדצבעיםבאנגלית",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/move_yellow": {
+  "text": "קומי קומי! מצאי משהו צהוב בחדר!",
+  "heard": "קומיקומימצאימשהוצהובבחדר",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/move_green": {
+  "text": "קומי קומי! תגעי במשהו ירוק!",
+  "heard": "קומיקומיתגעיבמשהוירוק",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/g1intro2": {
+  "text": "עכשיו משחק! אני אשאל, ואת תלחצי על הצבע הנכון!",
+  "heard": "עכשיומשחקאניאשאלואתתלחציעלהצבעהנכון",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/g2intro": {
+  "text": "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את הצבע!",
+  "heard": "כלהכבודעכשיומשחקאחרוןבלירמזיםאניאומרתמילהואתמוצאתאתהצבע",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/this_red": {
+  "text": "זה אדום",
+  "heard": "זהאדום",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/this_blue": {
+  "text": "זה כחול",
+  "heard": "זהכחול",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/this_yellow": {
+  "text": "זה צהוב",
+  "heard": "זהצהוב",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/this_green": {
+  "text": "זה ירוק",
+  "heard": "זהירוק",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:he/this_purple": {
+  "text": "זה סגול",
+  "heard": "זהסגול",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:en/red": {
+  "text": "red",
+  "heard": "Red",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:en/blue": {
+  "text": "blue",
+  "heard": "Blue",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:en/yellow": {
+  "text": "yellow",
+  "heard": "Yellow",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:en/green": {
+  "text": "green",
+  "heard": "Green",
+  "takes": 1,
+  "ok": true
+ },
+ "l2:en/purple": {
+  "text": "purple",
+  "heard": "Purple",
+  "takes": 1,
+  "ok": true
+ }
+}
