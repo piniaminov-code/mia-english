@@ -263,7 +263,7 @@ const Player = (() => {
     return new Promise(resolve => {
       const u = clipUrl(key);
       if (!u) { resolve(false); return; }
-      stop();
+      stop(true); // a new play supersedes the current one (tap on speaker / picture)
       let done = false;
       const finish = (ok) => { if (done) return; done = true; if (current === player) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
       current = player; resolveCurrent = finish;
@@ -275,22 +275,35 @@ const Player = (() => {
       setTimeout(() => finish(false), 20000); // never stall the lesson
     });
   }
-  function stop() {
-    if (resolveCurrent) { resolveCurrent = null; }
+  // interrupted=true: a superseded line resolves as done so the lesson script keeps
+  // moving; without this the old promise hung until the 20s guard and popped a bogus retry
+  function stop(interrupted) {
+    if (resolveCurrent) { const f = resolveCurrent; resolveCurrent = null; f(interrupted !== false); }
     if (current) { try { player.onended = null; player.onerror = null; player.pause(); } catch (e) {} current = null; }
   }
   return { play, unlock, stop };
 })();
 
 /* say a lesson line: pre-recorded clip first, device TTS as fallback */
-async function sayLine(line) {
+// a tap-to-hear-again (speaker button / picture) interrupting the script is tracked here
+let activeReplay = null;
+async function sayLine(line, isReplay) {
   if (!line.key) { await Speech.say(line.t, line.lang); return; }
+  // let an in-flight replay finish before the script's next line: the replay is heard
+  // in full, the lesson never hangs on it, and the script never talks over it
+  if (!isReplay) { while (activeReplay) { try { await activeReplay; } catch (e) { break; } } }
   for (;;) {
     const ok = await Player.play(line.key);
     if (ok) return;
     // approved clip failed to play: never fall back to device TTS - ask for a tap to retry
     await askRetry();
   }
+}
+function replayLine(line) {
+  Speech.unlock(); Player.unlock();
+  owl.classList.add("talking");
+  const p = sayLine(line, true).then(() => { if (activeReplay === p) activeReplay = null; owl.classList.remove("talking"); });
+  activeReplay = p;
 }
 function askRetry() {
   return new Promise(res => {
@@ -405,15 +418,13 @@ function confetti(n) {
 
 repeatBtn.addEventListener("click", () => {
   if (!lastPrompt) return;
-  Speech.unlock(); Player.unlock();
-  owl.classList.add("talking");
-  sayLine(lastPrompt).then(() => owl.classList.remove("talking"));
+  replayLine(lastPrompt);
 });
 
 /* ---------- screens ---------- */
 function startScreen() {
   session++;
-  setBubble("שלום! אני לֵילִי 🦉");
+  setBubble("שלום! אני לִילִי 🦉");
   lastPrompt = { t: "שלום! אני לילי!", lang: "he" };
   stage.innerHTML = `
     <div id="startWrap">
@@ -464,9 +475,8 @@ async function teachWord(i, s) {
     <div class="hint">לחצי על התמונה כדי לשמוע שוב 🔊</div>`;
   const card = document.getElementById("bigcard");
   card.addEventListener("click", () => {
-    Speech.unlock(); Sfx.tap();
-    owl.classList.add("talking");
-    sayLine({ key: "en/" + a.en, t: a.en, lang: "en" }).then(() => owl.classList.remove("talking"));
+    Sfx.tap();
+    replayLine({ key: "en/" + a.en, t: a.en, lang: "en" });
   });
   await speakLines([
     { key: "he/this_" + a.en, t: a.heThis + "!", lang: "he", html: a.heThis + "! " + a.emo, pauseAfter: 200 },
