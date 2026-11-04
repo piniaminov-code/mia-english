@@ -180,11 +180,11 @@
   <div id="stage"></div>
 </div>
 
-<script src="l2audio1.js?v=pron1"></script>
-<script src="l2audio2.js?v=pron1"></script>
-<script src="l2audio3.js?v=pron1"></script>
-<script src="l2audio4.js?v=pron1"></script>
-<script src="l2audio5.js?v=pron1"></script>
+<script src="l2audio1.js?v=fem1"></script>
+<script src="l2audio2.js?v=fem1"></script>
+<script src="l2audio3.js?v=fem1"></script>
+<script src="l2audio4.js?v=fem1"></script>
+<script src="l2audio5.js?v=fem1"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -384,7 +384,7 @@ const PRAISES = [
   { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
   { key: "he/praise2", t: "מעולה!", lang: "he" },
   { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
-  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise4", t: "איזו אלופה!", lang: "he" },
   { key: "he/praise5", t: "נהדר!", lang: "he" }
 ];
 
@@ -462,7 +462,7 @@ const lane = (i, n) => (100 / (n + 1)) * (i + 1) - 9;
 function startScreen() {
   session++;
   setBubble("בואי נשחק בלונים! 🎈");
-  lastPrompt = { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על הצבע הנכון!", lang: "he" };
+  lastPrompt = { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ותלחצי על הצבע הנכון!", lang: "he" };
   stage.innerHTML = `
     <div id="startWrap">
       <div class="owlBig">
@@ -491,8 +491,8 @@ async function intro() {
   repeatBtn.style.visibility = "visible";
   stage.innerHTML = "";
   await speakLines([
-    { key: "he/g1intro1", t: "וואו, למדת חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
-    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על הצבע הנכון!", lang: "he", html: "לחצי על הבלון הנכון 🎈" }
+    { key: "he/g1intro1", t: "וואו, למדנו חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ותלחצי על הצבע הנכון!", lang: "he", html: "לחצי על הבלון הנכון 🎈" }
   ], s);
   if (!alive(s)) return;
   playRound(s, 0);
@@ -577,8 +577,8 @@ async function finale(s) {
   Sfx.fanfare();
   confetti(60);
   await speakLines([
-    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
-    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/finale3", t: "מיה, אלופת האנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "מיה, אלופת האנגלית! 👋💛" }
   ], s);
   if (!alive(s)) return;
   document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-r1", "seg-r2", "seg-r3", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });

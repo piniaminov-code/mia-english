@@ -178,14 +178,14 @@
   <div id="stage"></div>
 </div>
 
-<script src="l3audio1.js?v=l3a1"></script>
-<script src="l3audio2.js?v=l3a1"></script>
-<script src="l3audio3.js?v=l3a1"></script>
-<script src="l3audio4.js?v=l3a1"></script>
-<script src="l3audio5.js?v=l3a1"></script>
-<script src="l3audio6.js?v=l3a1"></script>
-<script src="l3audio7.js?v=l3a1"></script>
-<script src="l3audio8.js?v=l3a1"></script>
+<script src="l3audio1.js?v=fem1"></script>
+<script src="l3audio2.js?v=fem1"></script>
+<script src="l3audio3.js?v=fem1"></script>
+<script src="l3audio4.js?v=fem1"></script>
+<script src="l3audio5.js?v=fem1"></script>
+<script src="l3audio6.js?v=fem1"></script>
+<script src="l3audio7.js?v=fem1"></script>
+<script src="l3audio8.js?v=fem1"></script>
 
 
 
@@ -393,7 +393,7 @@ const PRAISES = [
   { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
   { key: "he/praise2", t: "מעולה!", lang: "he" },
   { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
-  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise4", t: "איזו אלופה!", lang: "he" },
   { key: "he/praise5", t: "נהדר!", lang: "he" }
 ];
 
@@ -500,7 +500,7 @@ async function teachWord(i, s) {
   if (i >= NUMBERS.length) return game1Intro(s);
   if (i === 5) {
     await speakLines([
-      { key: "he/l3mid", t: "וואו! את כבר יודעת לספור עד חמש! עכשיו נלמד עד עשר!", lang: "he", html: "סופרים עד עשר! 🔟", pauseAfter: 300 }
+      { key: "he/l3mid", t: "וואו! כבר ספרנו עד חמש! עכשיו נלמד עד עשר!", lang: "he", html: "סופרים עד עשר! 🔟", pauseAfter: 300 }
     ], s);
     if (!alive(s)) return;
   }
@@ -538,7 +538,7 @@ async function teachWord(i, s) {
     await sleep(4000);
   }
   if (n.en === "eight") {
-    await speakLines([{ key: "he/move_clap5", t: "קומי קומי! מחאי כפיים חמש פעמים!", lang: "he", html: "קומי ומחאי כפיים 5 פעמים! 👏" }], s);
+    await speakLines([{ key: "he/move_clap5", t: "קומי קומי! תמחאי כפיים חמש פעמים!", lang: "he", html: "קומי ומחאי כפיים 5 פעמים! 👏" }], s);
     if (!alive(s)) return;
     await sleep(4000);
   }
@@ -555,8 +555,8 @@ async function game1Intro(s) {
   setSeg("seg-g1");
   stage.innerHTML = "";
   await speakLines([
-    { key: "he/l3g1intro1", t: "וואו, למדת עשר מילים חדשות!", lang: "he", html: "עשר מילים חדשות! 🌟", pauseAfter: 400 },
-    { key: "he/l3g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על המספר הנכון!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על המספר הנכון" }
+    { key: "he/l3g1intro1", t: "וואו, למדנו עשר מילים חדשות!", lang: "he", html: "עשר מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/l3g1intro2", t: "עכשיו משחק! אני אשאל, ותלחצי על המספר הנכון!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על המספר הנכון" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 1, shuffle(NUMBERS), game1Outro);
@@ -564,7 +564,7 @@ async function game1Intro(s) {
 
 async function game1Outro(s) {
   await speakLines([
-    { key: "he/l3g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מספר, ואת מוצאת אותו!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
+    { key: "he/l3g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מספר, ותמצאי אותו!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 2, shuffle(NUMBERS), recap);
@@ -666,9 +666,9 @@ async function finale(s) {
     </div>`;
   try { localStorage.setItem("mia-english-lesson3", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
-    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
-    { key: "he/l3finale2", t: "למדת היום לספור באנגלית מאחת עד עשר!", lang: "he", html: "one · two · three · four · five · six · seven · eight · nine · ten", pauseAfter: 300 },
-    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/l3finale2", t: "למדנו היום לספור באנגלית מאחת עד עשר!", lang: "he", html: "one · two · three · four · five · six · seven · eight · nine · ten", pauseAfter: 300 },
+    { key: "he/finale3", t: "מיה, אלופת האנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "מיה, אלופת האנגלית! 👋💛" }
   ], s);
   if (!alive(s)) return;
   document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });

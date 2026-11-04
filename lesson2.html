@@ -164,11 +164,11 @@
   <div id="stage"></div>
 </div>
 
-<script src="l2audio1.js?v=pron1"></script>
-<script src="l2audio2.js?v=pron1"></script>
-<script src="l2audio3.js?v=pron1"></script>
-<script src="l2audio4.js?v=pron1"></script>
-<script src="l2audio5.js?v=pron1"></script>
+<script src="l2audio1.js?v=fem1"></script>
+<script src="l2audio2.js?v=fem1"></script>
+<script src="l2audio3.js?v=fem1"></script>
+<script src="l2audio4.js?v=fem1"></script>
+<script src="l2audio5.js?v=fem1"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -368,7 +368,7 @@ const PRAISES = [
   { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
   { key: "he/praise2", t: "מעולה!", lang: "he" },
   { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
-  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise4", t: "איזו אלופה!", lang: "he" },
   { key: "he/praise5", t: "נהדר!", lang: "he" }
 ];
 
@@ -529,8 +529,8 @@ async function game1Intro(s) {
   setSeg("seg-g1");
   stage.innerHTML = "";
   await speakLines([
-    { key: "he/g1intro1", t: "וואו, למדת חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
-    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על הצבע הנכון!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על הצבע הנכון" }
+    { key: "he/g1intro1", t: "וואו, למדנו חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ותלחצי על הצבע הנכון!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על הצבע הנכון" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 1, shuffle(ANIMALS), game1Outro);
@@ -538,7 +538,7 @@ async function game1Intro(s) {
 
 async function game1Outro(s) {
   await speakLines([
-    { key: "he/g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את הצבע!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
+    { key: "he/g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ותמצאי את הצבע!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 2, shuffle(ANIMALS), recap);
@@ -631,16 +631,16 @@ async function finale(s) {
       <div class="sticker">🏅</div>
       <div class="starRow">${Array(Math.min(stars, 10)).fill(0).map((_, i) => `<span style="animation-delay:${i * 0.12}s">⭐</span>`).join("")}</div>
       <p class="title">כל הכבוד ${MIA}!</p>
-      <p class="subtitle">סיימת שיעור שלם באנגלית!</p>
+      <p class="subtitle">סיימנו שיעור שלם באנגלית!</p>
       <a class="cta coral" href="game2.html" style="text-decoration:none">🎈 למשחק הבלונים!</a>
       <button class="cta" id="againBtn" style="margin-top:12px">🔁 עוד פעם</button>
       <a class="navlink" href="index.html" style="margin-top:12px">🐶 שיעור 1: חיות</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
-    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
-    { key: "he/finale2", t: "למדת היום חמש מילים חדשות באנגלית!", lang: "he", html: "red · blue · yellow · green · purple", pauseAfter: 300 },
-    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/finale2", t: "למדנו היום חמש מילים חדשות באנגלית!", lang: "he", html: "red · blue · yellow · green · purple", pauseAfter: 300 },
+    { key: "he/finale3", t: "מיה, אלופת האנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "מיה, אלופת האנגלית! 👋💛" }
   ], s);
   if (!alive(s)) return;
   document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });

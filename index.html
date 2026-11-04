@@ -164,11 +164,12 @@
   <div id="stage"></div>
 </div>
 
-<script src="audio1.js?v=pron1"></script>
-<script src="audio2.js?v=pron1"></script>
-<script src="audio3.js?v=pron1"></script>
-<script src="audio4.js?v=pron1"></script>
-<script src="audio5.js?v=pron1"></script>
+<script src="audio1.js?v=fem1"></script>
+<script src="audio2.js?v=fem1"></script>
+<script src="audio3.js?v=fem1"></script>
+<script src="audio4.js?v=fem1"></script>
+<script src="audio5.js?v=fem1"></script>
+<script src="milli1.js?v=fem1"></script>
 <script>
 "use strict";
 const MIA = "מִיָּה";
@@ -368,7 +369,7 @@ const PRAISES = [
   { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
   { key: "he/praise2", t: "מעולה!", lang: "he" },
   { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
-  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise4", t: "איזו אלופה!", lang: "he" },
   { key: "he/praise5", t: "נהדר!", lang: "he" }
 ];
 
@@ -512,7 +513,7 @@ async function teachWord(i, s) {
     await sleep(3500);
   }
   if (a.en === "rabbit") {
-    await speakLines([{ key: "he/move_rabbit", t: "קומי קומי! תקפצי כמו ארנב! קפוץ קפוץ!", lang: "he", html: "קומי ותקפצי כמו ארנב! 🐰" }], s);
+    await speakLines([{ key: "he/move_rabbit", t: "קומי קומי! קפצי כמו ארנב! קפצי קפצי!", lang: "he", html: "קומי ותקפצי כמו ארנב! 🐰" }], s);
     if (!alive(s)) return;
     await sleep(3500);
   }
@@ -529,8 +530,8 @@ async function game1Intro(s) {
   setSeg("seg-g1");
   stage.innerHTML = "";
   await speakLines([
-    { key: "he/g1intro1", t: "וואו, למדת חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
-    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על התמונה הנכונה!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על התמונה הנכונה" }
+    { key: "he/g1intro1", t: "וואו, למדנו חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/g1intro2", t: "עכשיו משחק! אני אשאל, ותלחצי על התמונה הנכונה!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על התמונה הנכונה" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 1, shuffle(ANIMALS), game1Outro);
@@ -538,7 +539,7 @@ async function game1Intro(s) {
 
 async function game1Outro(s) {
   await speakLines([
-    { key: "he/g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ואת מוצאת את החיה!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
+    { key: "he/g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מילה, ותמצאי את החיה!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
   ], s);
   if (!alive(s)) return;
   gameRound(s, 2, shuffle(ANIMALS), recap);
@@ -631,15 +632,16 @@ async function finale(s) {
       <div class="sticker">🏅</div>
       <div class="starRow">${Array(Math.min(stars, 10)).fill(0).map((_, i) => `<span style="animation-delay:${i * 0.12}s">⭐</span>`).join("")}</div>
       <p class="title">כל הכבוד ${MIA}!</p>
-      <p class="subtitle">סיימת שיעור שלם באנגלית!</p>
+      <p class="subtitle">סיימנו שיעור שלם באנגלית!</p>
+      <a class="cta" id="milliBtn" href="forest-demo.html?from=lesson1" style="display:inline-block;text-decoration:none;margin-bottom:12px">🐶 משחק עם מילי</a>
       <button class="cta coral" id="againBtn">🔁 עוד פעם!</button>
       <a class="navlink" href="lesson2.html" style="margin-top:12px">🎨 שיעור 2: צבעים</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
-    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
-    { key: "he/finale2", t: "למדת היום חמש מילים חדשות באנגלית!", lang: "he", html: "dog · cat · bird · fish · rabbit", pauseAfter: 300 },
-    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/finale2", t: "למדנו היום חמש מילים חדשות באנגלית!", lang: "he", html: "dog · cat · bird · fish · rabbit", pauseAfter: 300 },
+    { key: "he/finale3m", t: "מיה, אלופת האנגלית! עכשיו מילי רוצה לשחק איתך!", lang: "he", html: "מילי רוצה לשחק איתך! 🐶💛" }
   ], s);
   if (!alive(s)) return;
   document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
