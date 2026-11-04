@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>האנגלית של מיה - שיעור 3 · פירות (טיוטה)</title>
+<title>האנגלית של מיה - שיעור 3 · מספרים (טיוטה)</title>
 <style>
   :root{
     --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
@@ -460,7 +460,7 @@ function startScreen() {
   stage.innerHTML = `
     <div id="startWrap">
       <div class="milliBig">${milli_svg}</div>
-      <p class="title">שיעור 3 · פירות 🍎</p>
+      <p class="title">שיעור 3 · מספרים 1-10 🔢</p>
       <p class="subtitle">עם מילי גורת הלברדור</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
       <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
@@ -476,21 +476,21 @@ async function intro() {
   if (wrap) wrap.querySelector(".milliBig").id = "owlBigM";
   stage.innerHTML = `<div id="startWrap"><div class="milliBig" id="owlBigM">${milli_svg}</div>
     <div class="bigcard" id="bigcard" style="border-color:#FF6B6B">
-      <div class="emo">🍎</div>
-      <div class="word">apple</div>
+      <div class="emo">1️⃣</div>
+      <div class="word">one</div>
     </div>
     <div class="hint">לחצי על התמונה כדי לשמוע 🔊</div></div>`;
   const card = document.getElementById("bigcard");
   card.addEventListener("click", () => {
     Sfx.tap();
-    replayLine({ t: "apple", lang: "en" });
+    replayLine({ t: "one", lang: "en" });
   });
   const owlBig = document.getElementById("owlBigM");
   await speakLines([
     { key: "he/intro1", t: "היי " + MIA + ", שמחה לראות אותך.", lang: "he", html: "היי " + MIA + "! 👋", pauseAfter: 300 },
-    { t: "היום נלמד פירות באנגלית!", lang: "he", html: "היום לומדים: פירות! 🍎🍌🍇", pauseAfter: 400 },
-    { t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">apple</span>', pauseAfter: 150 },
-    { t: "apple", lang: "en", html: '<span class="en">apple</span> 🗣️', pauseAfter: 300 },
+    { t: "היום נלמד מספרים באנגלית!", lang: "he", html: "היום לומדים: מספרים! 1️⃣2️⃣3️⃣", pauseAfter: 400 },
+    { t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">one</span>', pauseAfter: 150 },
+    { t: "one", lang: "en", html: '<span class="en">one</span> 🗣️', pauseAfter: 300 },
     { key: "he/yourturn", t: "עכשיו תורך, מיה!", lang: "he", html: "עכשיו תורך, מיה! 📢" }
   ], s);
   if (!alive(s)) return;
