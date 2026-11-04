@@ -163,14 +163,7 @@
   </div>
 
   <div id="teacherRow">
-    <div class="owl" id="owl">
-      <div class="body"></div><div class="belly"></div>
-      <div class="eye l"><div class="pupil"></div></div>
-      <div class="eye r"><div class="pupil"></div></div>
-      <div class="beak"></div>
-      <div class="wing l"></div><div class="wing r"></div>
-      <div class="foot l"></div><div class="foot r"></div>
-    </div>
+    <div id="owl"><div class="milliSvg"><svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="90" cy="168" rx="60" ry="8" fill="#254f3b" opacity=".18"/><path d="M136 152Q166 142 158 116" fill="none" stroke="#f7f0e0" stroke-width="13" stroke-linecap="round" class="tail"/><ellipse cx="90" cy="132" rx="44" ry="36" fill="#fffdf8"/><ellipse cx="90" cy="141" rx="24" ry="23" fill="#ffffff"/><ellipse cx="52" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="128" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="90" cy="76" rx="50" ry="44" fill="#fffdf8"/><ellipse cx="44" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(7 44 82)"/><ellipse cx="136" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(-7 136 82)"/><ellipse cx="90" cy="97" rx="25" ry="17" fill="#ffffff"/><g class="eyes"><ellipse cx="70" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><ellipse cx="110" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><circle cx="72" cy="68.5" r="2.4" fill="white"/><circle cx="112" cy="68.5" r="2.4" fill="white"/></g><path d="M82 88Q90 84 98 88Q97 96 90 96Q83 96 82 88Z" fill="#43382e"/><g class="mouthg"><path class="mouth" d="M78 101Q90 123 102 101Z" fill="#b8485f"/><path class="tongue" d="M84 108Q90 119 96 108Z" fill="#f08a9a"/></g><path d="M90 96V101M90 101Q83 107 77 102M90 101Q97 107 103 102" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="88" rx="8" ry="5" fill="#f6e8d2"/><ellipse cx="118" cy="88" rx="8" ry="5" fill="#f6e8d2"/></svg></div></div>
     <div id="bubble">...</div>
   </div>
 
@@ -450,7 +443,7 @@ repeatBtn.addEventListener("click", () => {
 
 /* ---------- screens (draft for approval) ---------- */
 function milliDiv(cls) {
-  return `<div class="milliSvg ${cls || ""}" id="owl"><svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="90" cy="168" rx="60" ry="8" fill="#254f3b" opacity=".18"/><path d="M136 152Q166 142 158 116" fill="none" stroke="#f7f0e0" stroke-width="13" stroke-linecap="round" class="tail"/><ellipse cx="90" cy="132" rx="44" ry="36" fill="#fffdf8"/><ellipse cx="90" cy="141" rx="24" ry="23" fill="#ffffff"/><ellipse cx="52" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="128" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="90" cy="76" rx="50" ry="44" fill="#fffdf8"/><ellipse cx="44" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(7 44 82)"/><ellipse cx="136" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(-7 136 82)"/><ellipse cx="90" cy="97" rx="25" ry="17" fill="#ffffff"/><g class="eyes"><ellipse cx="70" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><ellipse cx="110" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><circle cx="72" cy="68.5" r="2.4" fill="white"/><circle cx="112" cy="68.5" r="2.4" fill="white"/></g><path d="M82 88Q90 84 98 88Q97 96 90 96Q83 96 82 88Z" fill="#43382e"/><g class="mouthg"><path class="mouth" d="M78 101Q90 123 102 101Z" fill="#b8485f"/><path class="tongue" d="M84 108Q90 119 96 108Z" fill="#f08a9a"/></g><path d="M90 96V101M90 101Q83 107 77 102M90 101Q97 107 103 102" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="88" rx="8" ry="5" fill="#f6e8d2"/><ellipse cx="118" cy="88" rx="8" ry="5" fill="#f6e8d2"/></svg></div>`;
+  const MILLI_SVG = `<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="90" cy="168" rx="60" ry="8" fill="#254f3b" opacity=".18"/><path d="M136 152Q166 142 158 116" fill="none" stroke="#f7f0e0" stroke-width="13" stroke-linecap="round" class="tail"/><ellipse cx="90" cy="132" rx="44" ry="36" fill="#fffdf8"/><ellipse cx="90" cy="141" rx="24" ry="23" fill="#ffffff"/><ellipse cx="52" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="128" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="90" cy="76" rx="50" ry="44" fill="#fffdf8"/><ellipse cx="44" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(7 44 82)"/><ellipse cx="136" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(-7 136 82)"/><ellipse cx="90" cy="97" rx="25" ry="17" fill="#ffffff"/><g class="eyes"><ellipse cx="70" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><ellipse cx="110" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><circle cx="72" cy="68.5" r="2.4" fill="white"/><circle cx="112" cy="68.5" r="2.4" fill="white"/></g><path d="M82 88Q90 84 98 88Q97 96 90 96Q83 96 82 88Z" fill="#43382e"/><g class="mouthg"><path class="mouth" d="M78 101Q90 123 102 101Z" fill="#b8485f"/><path class="tongue" d="M84 108Q90 119 96 108Z" fill="#f08a9a"/></g><path d="M90 96V101M90 101Q83 107 77 102M90 101Q97 107 103 102" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="88" rx="8" ry="5" fill="#f6e8d2"/><ellipse cx="118" cy="88" rx="8" ry="5" fill="#f6e8d2"/></svg>`;
 }
 
 function startScreen() {
@@ -459,7 +452,7 @@ function startScreen() {
   lastPrompt = { t: "היי! אני מילי!", lang: "he" };
   stage.innerHTML = `
     <div id="startWrap">
-      <div class="milliBig">${milli_svg}</div>
+      <div class="milliBig"><div class="milliSvg">${MILLI_SVG}</div></div>
       <p class="title">שיעור 3 · מספרים 1-10 🔢</p>
       <p class="subtitle">עם מילי גורת הלברדור</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
@@ -474,7 +467,7 @@ async function intro() {
   repeatBtn.style.visibility = "visible";
   const wrap = document.getElementById("startWrap");
   if (wrap) wrap.querySelector(".milliBig").id = "owlBigM";
-  stage.innerHTML = `<div id="startWrap"><div class="milliBig" id="owlBigM">${milli_svg}</div>
+  stage.innerHTML = `<div id="startWrap"><div class="milliBig" id="owlBigM"><div class="milliSvg">${MILLI_SVG}</div></div>
     <div class="bigcard" id="bigcard" style="border-color:#FF6B6B">
       <div class="emo">1️⃣</div>
       <div class="word">one</div>
