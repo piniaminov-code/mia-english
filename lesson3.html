@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>האנגלית של מיה - שיעור 3 · פירות (טיוטה)</title>
+<style>
+  :root{
+    --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
+    --purple:#9B7EDE; --pink:#FF8FB1; --card:#FFFFFF; --shadow:0 8px 24px rgba(74,59,49,.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:"Heebo","Assistant","Segoe UI",system-ui,-apple-system,sans-serif;
+    background:linear-gradient(180deg,#BFE9FF 0%,#DFF4E4 55%,#FFF3D6 100%);
+    color:var(--ink); overflow:hidden; touch-action:manipulation; user-select:none; -webkit-user-select:none;
+    position:fixed; inset:0;
+  }
+  .cloud{position:fixed; border-radius:999px; background:rgba(255,255,255,.85); filter:blur(2px); z-index:0; pointer-events:none;}
+  .cloud::before,.cloud::after{content:""; position:absolute; background:inherit; border-radius:50%;}
+  .cloud.c1{width:120px;height:38px; top:9%; animation:drift 46s linear infinite;}
+  .cloud.c1::before{width:56px;height:56px;top:-26px;right:18px;}
+  .cloud.c1::after{width:40px;height:40px;top:-16px;right:64px;}
+  .cloud.c2{width:90px;height:30px; top:22%; animation:drift 64s linear infinite; animation-delay:-30s;}
+  .cloud.c2::before{width:42px;height:42px;top:-20px;right:14px;}
+  .cloud.c2::after{width:30px;height:30px;top:-12px;right:48px;}
+  @keyframes drift{from{right:-160px;} to{right:110%;}}
+
+  #app{position:relative; z-index:1; height:100%; display:flex; flex-direction:column; max-width:560px; margin:0 auto; padding:10px 14px calc(12px + env(safe-area-inset-bottom));}
+
+  /* top bar */
+  #topbar{display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:44px;}
+  #progress{display:flex; gap:8px; align-items:center; background:rgba(255,255,255,.65); padding:6px 14px; border-radius:999px; box-shadow:var(--shadow);}
+  #progress .seg{font-size:20px; filter:grayscale(1) opacity(.45); transition:filter .3s, transform .3s;}
+  #progress .seg.on{filter:none; transform:scale(1.15);}
+  #starsChip{display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.65); border-radius:999px; padding:6px 14px; font-weight:800; font-size:18px; box-shadow:var(--shadow);}
+  #repeatBtn{width:44px;height:44px;border:none;border-radius:50%;background:#fff;font-size:22px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;}
+  #repeatBtn:active{transform:scale(.9);}
+  #repeatBtn.pulse{animation:pulseBtn 1s ease infinite;}
+  @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 rgba(255,138,92,.55);} 50%{box-shadow:0 0 0 12px rgba(255,138,92,0);}}
+
+  /* owl + bubble */
+  #teacherRow{display:flex; align-items:flex-end; gap:10px; margin-top:4px; min-height:132px;}
+  #bubble{
+    flex:1; background:#fff; border-radius:20px; border-bottom-right-radius:6px; padding:10px 14px;
+    font-size:19px; font-weight:700; line-height:1.35; box-shadow:var(--shadow); min-height:56px;
+    display:flex; align-items:center; justify-content:center; text-align:center; position:relative; margin-bottom:26px;
+  }
+  #bubble .en{direction:ltr; unicode-bidi:isolate; color:var(--coral); font-weight:900; letter-spacing:.5px; margin:0 3px; padding:0 3px;}
+  .owl{position:relative; width:96px; height:112px; flex:0 0 96px;}
+  .owl .body{position:absolute; inset:8px 6px 0 6px; background:linear-gradient(180deg,#B990E0,#8B5FC7); border-radius:48% 48% 46% 46%/58% 58% 42% 42%; box-shadow:inset 0 -10px 0 rgba(0,0,0,.08);}
+  .owl .belly{position:absolute; left:50%; bottom:6px; transform:translateX(-50%); width:56px; height:52px; background:#F3E8FF; border-radius:50% 50% 46% 46%;}
+  .owl .eye{position:absolute; top:20px; width:28px; height:28px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; animation:blink 4.6s infinite;}
+  .owl .eye.l{left:14px;} .owl .eye.r{right:14px;}
+  .owl .pupil{width:12px;height:12px;background:#33244A;border-radius:50%;}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1);} 95%{transform:scaleY(.08);}}
+  .owl .beak{position:absolute; top:46px; left:50%; transform:translateX(-50%); width:0;height:0; border:8px solid transparent; border-top:12px solid #FFB03D;}
+  .owl .wing{position:absolute; top:52px; width:16px; height:38px; background:#8B5FC7; border-radius:50%;}
+  .owl .wing.l{left:0; transform:rotate(14deg);} .owl .wing.r{right:0; transform:rotate(-14deg);}
+  .owl .foot{position:absolute; bottom:-2px; width:12px; height:8px; background:#FFB03D; border-radius:4px;}
+  .owl .foot.l{left:30px;} .owl .foot.r{right:30px;}
+  .owl.talking .body{animation:talk .38s ease-in-out infinite;}
+  @keyframes talk{0%,100%{transform:scaleY(1);} 50%{transform:scaleY(.955);}}
+  .owl.cheer{animation:cheer .6s ease;}
+  @keyframes cheer{0%,100%{transform:translateY(0);} 35%{transform:translateY(-14px) rotate(-4deg);} 70%{transform:translateY(-6px) rotate(3deg);}}
+
+#audioRetry{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; background:rgba(255,248,240,.85);}
+  /* stage */
+  #stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:0; position:relative;}
+  .bigcard{
+    background:var(--card); border-radius:32px; box-shadow:var(--shadow); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px; width:min(72vw,300px); aspect-ratio:1/1.02; cursor:pointer;
+    animation:popIn .45s cubic-bezier(.34,1.56,.64,1); border:6px solid transparent;
+  }
+  @keyframes popIn{from{transform:scale(.4); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .bigcard .emo{font-size:min(34vw,140px); line-height:1.05; filter:drop-shadow(0 6px 8px rgba(0,0,0,.12));}
+  .bigcard .word{direction:ltr; font-size:40px; font-weight:900; color:var(--ink); letter-spacing:1px;}
+  .bigcard:active{transform:scale(.96);}
+
+  .optgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; width:min(88vw,380px); align-items:stretch;}
+  .opt{
+    background:var(--card); border-radius:26px; box-shadow:var(--shadow); aspect-ratio:1/1; display:flex;
+    align-items:center; justify-content:center; cursor:pointer; border:6px solid transparent;
+    animation:popIn .4s cubic-bezier(.34,1.56,.64,1) backwards; transition:transform .15s, opacity .3s, border-color .2s;
+  }
+  .opt:nth-child(2){animation-delay:.07s;} .opt:nth-child(3){animation-delay:.14s;}
+  .opt .emo{font-size:min(22vw,92px); line-height:1;}
+  .opt:active{transform:scale(.94);}
+  .opt:nth-child(3):last-child{grid-column:1 / -1; width:50%; justify-self:center;}
+  .opt.wrong{opacity:.35; transform:scale(.92); pointer-events:none;}
+  .opt.right{border-color:var(--teal); animation:rightPulse .55s ease;}
+  @keyframes rightPulse{0%{transform:scale(1);} 40%{transform:scale(1.1) rotate(2deg);} 100%{transform:scale(1);}}
+  .shake{animation:shake .45s ease;}
+  @keyframes shake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 50%{transform:translateX(8px);} 75%{transform:translateX(-5px);}}
+
+  .cta{
+    border:none; cursor:pointer; background:linear-gradient(180deg,#5ED6C0,var(--teal)); color:#fff; font-family:inherit;
+    font-size:26px; font-weight:900; padding:16px 44px; border-radius:999px; box-shadow:0 8px 0 #2A9A87, var(--shadow);
+    transition:transform .12s, box-shadow .12s; display:flex; align-items:center; gap:10px;
+  }
+  .cta:active{transform:translateY(6px); box-shadow:0 2px 0 #2A9A87;}
+  .cta.coral{background:linear-gradient(180deg,#FFA47E,var(--coral)); box-shadow:0 8px 0 #E0693C, var(--shadow);}
+  .cta.coral:active{box-shadow:0 2px 0 #E0693C;}
+
+  /* start screen */
+  #startWrap{display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center;}
+  #startWrap .owlBig{transform:scale(1.5); margin:26px 0 30px;}
+  .title{font-size:30px; font-weight:900; margin:0;}
+  .subtitle{font-size:18px; font-weight:700; opacity:.75; margin:0;}
+  .navrow{margin-top:14px; display:flex; gap:10px; justify-content:center;}
+  .navlink{display:inline-block; background:#fff; border-radius:999px; padding:10px 18px; font-weight:800; color:var(--ink); text-decoration:none; box-shadow:var(--shadow); font-size:15px;}
+  details.parent{background:rgba(255,255,255,.7); border-radius:16px; padding:8px 14px; font-size:14px; max-width:340px; box-shadow:var(--shadow);}
+  details.parent summary{cursor:pointer; font-weight:800;}
+  details.parent p{margin:8px 0 4px; line-height:1.5; font-weight:500;}
+
+  /* recap parade */
+  .parade{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:min(92vw,420px);}
+  .parade .pitem{background:#fff; border-radius:22px; box-shadow:var(--shadow); width:30%; aspect-ratio:1/1.06; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:.35; transform:scale(.9); transition:all .35s;}
+  .parade .pitem .emo{font-size:54px; line-height:1;}
+  .parade .pitem .word{direction:ltr; font-weight:900; font-size:20px;}
+  .parade .pitem.now{opacity:1; transform:scale(1.12); box-shadow:0 10px 26px rgba(255,138,92,.35); border:4px solid var(--sun);}
+
+  /* finale */
+  #finaleWrap{display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center;}
+  .sticker{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF,#FFE9A8); display:flex; align-items:center; justify-content:center; font-size:76px; box-shadow:0 0 0 10px #fff, 0 0 0 16px var(--sun), var(--shadow); animation:stickerIn .8s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes stickerIn{from{transform:scale(0) rotate(-40deg);} to{transform:scale(1) rotate(0);}}
+  .starRow{display:flex; gap:5px; font-size:27px; flex-wrap:wrap; justify-content:center; max-width:340px;}
+  .starRow span{animation:starPop .5s cubic-bezier(.34,1.56,.64,1) backwards; display:inline-block;}
+  @keyframes starPop{from{transform:scale(0);} to{transform:scale(1);}}
+  .confetti{position:fixed; top:-20px; width:12px; height:18px; z-index:50; pointer-events:none; border-radius:3px; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);}}
+
+  .flyStar{position:fixed; font-size:34px; z-index:60; pointer-events:none; transition:all .7s cubic-bezier(.5,-0.2,.3,1.2);}
+  .hint{font-size:15px; font-weight:700; opacity:.6;}
+
+  /* Milli the labrador (from the approved forest demo) */
+  .milliSvg{width:110px; height:110px;}
+  .milliSvg svg{width:100%; height:auto; overflow:visible; animation:breathe 4s ease-in-out infinite;}
+  #owl.talking .milliSvg svg, .milliBig.talking .milliSvg svg{animation:talk .5s ease-in-out infinite;}
+  .milliSvg .tail{transform-box:fill-box; transform-origin:0% 100%; animation:wag 1.6s ease-in-out infinite;}
+  .milliSvg .eyes{animation:blink 5s infinite;}
+  .milliBig{transform:scale(1.6); margin:26px 0 34px;}
+  @keyframes wag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(14deg)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @keyframes breathe{50%{transform:translateY(-3px) rotate(1deg)}}
+  @keyframes talk{50%{transform:translateY(-4px) rotate(3deg)}}
+  .draftNote{font-size:13px; opacity:.55; max-width:300px; text-align:center;}
+</style>
+</head>
+<body>
+<div class="cloud c1"></div><div class="cloud c2"></div>
+<div id="app">
+  <div id="topbar">
+    <div id="progress" aria-hidden="true">
+      <span class="seg" id="seg-learn">🎨</span>
+      <span class="seg" id="seg-g1">🎮</span>
+      <span class="seg" id="seg-g2">👂</span>
+      <span class="seg" id="seg-end">🏆</span>
+    </div>
+    <div id="starsChip">⭐ <span id="starCount">0</span></div>
+    <button id="repeatBtn" title="שמעי שוב" style="visibility:hidden">🔊</button>
+  </div>
+
+  <div id="teacherRow">
+    <div class="owl" id="owl">
+      <div class="body"></div><div class="belly"></div>
+      <div class="eye l"><div class="pupil"></div></div>
+      <div class="eye r"><div class="pupil"></div></div>
+      <div class="beak"></div>
+      <div class="wing l"></div><div class="wing r"></div>
+      <div class="foot l"></div><div class="foot r"></div>
+    </div>
+    <div id="bubble">...</div>
+  </div>
+
+  <div id="stage"></div>
+</div>
+
+<script src="faudio1.js"></script>
+<script src="faudio2.js"></script>
+<script src="l2audio5.js?v=pron1"></script>
+
+
+
+<script>
+"use strict";
+const MIA = "מִיָּה";
+
+/* ---------- speech engine (device TTS, fallback only) ---------- */
+const Speech = (() => {
+  let utterRef = null, speakTimer, resolveCurrent = null, enVoice = null, heVoice = null;
+  let lastGesture = 0, firstSpeakDone = false, warmedUp = false, lastUnlock = 0;
+  const hasSynth = () => typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+  function pickVoices() {
+    if (!hasSynth()) return;
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("en-us"));
+    enVoice = en.find(v => v.localService) || en[0] || null;
+    const he = voices.filter(v => v.lang.replace("_", "-").toLowerCase().startsWith("he"));
+    heVoice = he.find(v => v.localService) || he[0] || null;
+  }
+  if (hasSynth()) { pickVoices(); window.speechSynthesis.addEventListener?.("voiceschanged", pickVoices); }
+  ["pointerdown", "touchstart", "keydown", "click"].forEach(ev =>
+    window.addEventListener(ev, () => { lastGesture = Date.now(); }, { capture: true, passive: true }));
+  function warmUp() {
+    if (warmedUp || !hasSynth()) return; warmedUp = true;
+    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; window.speechSynthesis.speak(u); } catch (e) {}
+  }
+  if (hasSynth()) window.addEventListener("pointerdown", warmUp, { once: true, capture: true });
+  function unlock() {
+    if (!hasSynth() || Date.now() - lastUnlock < 1500) return;
+    lastUnlock = Date.now();
+    try { const s = window.speechSynthesis; if (s.speaking || s.pending) return;
+      const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; s.speak(u); } catch (e) {}
+  }
+  function say(text, lang) {
+    lang = lang || "he";
+    if (!hasSynth()) return Promise.resolve();
+    const synth = window.speechSynthesis;
+    if (resolveCurrent) { const r = resolveCurrent; resolveCurrent = null; r(); }
+    clearTimeout(speakTimer);
+    const firstDelay = firstSpeakDone ? 0 : 400; firstSpeakDone = true;
+    return new Promise(resolve => {
+      const run = (attempt) => {
+        try {
+          if (synth.paused) synth.resume();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = lang === "he" ? "he-IL" : "en-US";
+          u.rate = lang === "he" ? 0.8 : 0.5;
+          const v = lang === "he" ? heVoice : enVoice;
+          if (v) u.voice = v;
+          let started = false, done = false;
+          const finish = () => { if (done) return; done = true; if (utterRef === u) utterRef = null; if (resolveCurrent) resolveCurrent = null; resolve(); };
+          u.onstart = () => { started = true; }; u.onend = finish; u.onerror = finish;
+          utterRef = u; resolveCurrent = finish;
+          synth.speak(u);
+          speakTimer = setTimeout(() => {
+            if (!started && utterRef === u) { synth.cancel(); utterRef = null;
+              if (attempt < 1) speakTimer = setTimeout(() => run(attempt + 1), 80); else finish();
+            } else if (utterRef === u) { finish(); }
+          }, attempt < 1 ? 1500 : Math.max(6000, text.length * 300));
+        } catch (e) { resolve(); }
+      };
+      if (synth.speaking || synth.pending || synth.paused) { synth.cancel(); speakTimer = setTimeout(() => run(0), Math.max(80, firstDelay)); }
+      else if (firstDelay) speakTimer = setTimeout(() => run(0), firstDelay);
+      else run(0);
+    });
+  }
+  return { say, unlock, warmUp };
+})();
+
+/* ---------- pre-recorded teacher audio (natural voice) ---------- */
+const Player = (() => {
+  let current = null, resolveCurrent = null;
+  const urls = {};
+  // one shared element: iOS Safari blesses playback once per user gesture; per-key
+  // elements played later (outside the gesture) can fail and trigger the TTS fallback
+  const player = new Audio();
+  player.preload = "auto";
+  player.playsInline = true;
+  function clipUrl(key) {
+    if (!urls[key]) {
+      if (typeof AUDIO === "undefined" || !AUDIO[key]) return null;
+      const bin = atob(AUDIO[key]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      urls[key] = URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
+    }
+    return urls[key];
+  }
+  function unlock() {
+    // warm the media engine inside the first user gesture, muted so it never doubles the clip
+    try { const u = clipUrl("he/intro1"); if (u) { const a = new Audio(u); a.muted = true; a.play().then(() => { a.pause(); }).catch(() => {}); } } catch (e) {}
+  }
+  function play(key) {
+    return new Promise(resolve => {
+      const u = clipUrl(key);
+      if (!u) { resolve(false); return; }
+      stop(true); // a new play supersedes the current one (tap on speaker / picture)
+      let done = false, attempts = 0, retryTimer = null;
+      const finish = (ok) => { if (done) return; done = true; if (current === player) current = null; if (resolveCurrent) resolveCurrent = null; resolve(ok !== false); };
+      // iOS can transiently reject a play that starts while the answer chime's WebAudio
+      // tones hold the audio session; retry on the same blessed element before giving up
+      const retryOrFail = (why) => {
+        if (done || retryTimer) return;
+        window.__audioFail = { key: key, via: why, attempt: attempts, at: Date.now() };
+        if (attempts < 3) retryTimer = setTimeout(() => { retryTimer = null; attempt(); }, 350);
+        else finish(false);
+      };
+      const attempt = () => {
+        if (done) return;
+        attempts++;
+        current = player; resolveCurrent = finish;
+        player.onended = () => finish(true);
+        player.onerror = () => retryOrFail("error");
+        try { player.src = u; } catch (e) {}
+        const p = player.play();
+        if (p && p.catch) p.catch((e) => retryOrFail(String(e && e.name || e)));
+      };
+      attempt();
+      setTimeout(() => finish(false), 20000); // never stall the lesson
+    });
+  }
+  // interrupted=true: a superseded line resolves as done so the lesson script keeps
+  // moving; without this the old promise hung until the 20s guard and popped a bogus retry
+  function stop(interrupted) {
+    if (resolveCurrent) { const f = resolveCurrent; resolveCurrent = null; f(interrupted !== false); }
+    if (current) { try { player.onended = null; player.onerror = null; player.pause(); } catch (e) {} current = null; }
+  }
+  return { play, unlock, stop };
+})();
+
+/* say a lesson line: pre-recorded clip first, device TTS as fallback */
+// a tap-to-hear-again (speaker button / picture) interrupting the script is tracked here
+let activeReplay = null;
+async function sayLine(line, isReplay) {
+  if (!line.key) { await Speech.say(line.t, line.lang); return; }
+  // let an in-flight replay finish before the script's next line: the replay is heard
+  // in full, the lesson never hangs on it, and the script never talks over it
+  if (!isReplay) { while (activeReplay) { try { await activeReplay; } catch (e) { break; } } }
+  for (;;) {
+    const ok = await Player.play(line.key);
+    if (ok) return;
+    // approved clip failed to play: never fall back to device TTS - ask for a tap to retry
+    await askRetry();
+  }
+}
+function replayLine(line) {
+  Speech.unlock(); Player.unlock();
+  owl.classList.add("talking");
+  const p = sayLine(line, true).then(() => { if (activeReplay === p) activeReplay = null; owl.classList.remove("talking"); });
+  activeReplay = p;
+}
+function askRetry() {
+  return new Promise(res => {
+    document.getElementById("audioRetry")?.remove();
+    const d = document.createElement("div");
+    d.id = "audioRetry";
+    d.innerHTML = '<button class="cta coral" type="button">🔊 לחצי לשמיעה</button>';
+    document.body.appendChild(d);
+    d.querySelector("button").addEventListener("click", () => {
+      Sfx.tap(); Player.unlock();
+      d.remove();
+      res(true);
+    }, { once: true });
+  });
+}
+
+/* ---------- tiny WebAudio chimes ---------- */
+const Sfx = (() => {
+  let ctx = null;
+  function ac() { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ctx && ctx.state === "suspended") ctx.resume(); return ctx; }
+  function tone(freq, t, dur, type, vol) {
+    const c = ac(); if (!c) return;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, c.currentTime + t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.18, c.currentTime + t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + t + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(c.currentTime + t); o.stop(c.currentTime + t + dur + 0.05);
+  }
+  return {
+    tap() { tone(660, 0, .12, "sine", .1); },
+    good() { tone(523, 0, .16); tone(659, .12, .16); tone(784, .24, .3); },
+    wrong() { tone(300, 0, .2, "triangle", .12); tone(240, .15, .3, "triangle", .1); },
+    star() { tone(880, 0, .12); tone(1175, .09, .2); },
+    fanfare() { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .14, .3)); tone(1319, .6, .5); }
+  };
+})();
+
+/* ---------- lesson data ---------- */
+const ANIMALS = [
+  { en: "red",    he: "אדום",  heThis: "זה אדום",  emo: "🔴", color: "#FF6B6B" },
+  { en: "blue",   he: "כחול",  heThis: "זה כחול",  emo: "🔵", color: "#4D96FF" },
+  { en: "yellow", he: "צהוב",  heThis: "זה צהוב",  emo: "🟡", color: "#FFD93D" },
+  { en: "green",  he: "ירוק",  heThis: "זה ירוק",  emo: "🟢", color: "#6BCB77" },
+  { en: "purple", he: "סגול",  heThis: "זה סגול",  emo: "🟣", color: "#C084FC" }
+];
+const PRAISES = [
+  { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
+  { key: "he/praise2", t: "מעולה!", lang: "he" },
+  { key: "he/praise3", t: "וואו, יופי!", lang: "he" },
+  { key: "he/praise4", t: "את אלופה!", lang: "he" },
+  { key: "he/praise5", t: "נהדר!", lang: "he" }
+];
+
+/* ---------- helpers ---------- */
+const stage = document.getElementById("stage");
+const bubble = document.getElementById("bubble");
+const owl = document.getElementById("owl");
+const repeatBtn = document.getElementById("repeatBtn");
+let session = 0;
+let lastPrompt = null;
+let stars = 0;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const alive = s => s === session;
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function setBubble(html) { bubble.innerHTML = html; }
+function setSeg(id) { document.getElementById(id).classList.add("on"); }
+function addStar(fromEl) {
+  stars++;
+  if (fromEl) {
+    const r = fromEl.getBoundingClientRect(), chip = document.getElementById("starsChip").getBoundingClientRect();
+    const s = document.createElement("div");
+    s.className = "flyStar"; s.textContent = "⭐";
+    s.style.left = (r.left + r.width / 2 - 17) + "px"; s.style.top = (r.top + r.height / 2 - 17) + "px";
+    document.body.appendChild(s);
+    requestAnimationFrame(() => { s.style.left = (chip.left + 10) + "px"; s.style.top = (chip.top + 4) + "px"; s.style.transform = "scale(.4)"; s.style.opacity = ".3"; });
+    setTimeout(() => s.remove(), 750);
+  }
+  setTimeout(() => { document.getElementById("starCount").textContent = stars; }, fromEl ? 650 : 0);
+}
+async function speakLines(lines, s) {
+  for (const line of lines) {
+    if (!alive(s)) return;
+    if (line.html !== undefined) setBubble(line.html);
+    lastPrompt = line;
+    owl.classList.add("talking");
+    await sayLine(line);
+    owl.classList.remove("talking");
+    if (!alive(s)) return;
+    if (line.pauseAfter) await sleep(line.pauseAfter);
+  }
+}
+function cheer() { owl.classList.remove("cheer"); void owl.offsetWidth; owl.classList.add("cheer"); }
+
+function confetti(n) {
+  const colors = ["#FF8A5C", "#3DBEA8", "#FFC93D", "#9B7EDE", "#FF8FB1", "#6BCBFF"];
+  for (let i = 0; i < (n || 50); i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2.2 + Math.random() * 1.8) + "s";
+    c.style.animationDelay = (Math.random() * 0.8) + "s";
+    if (Math.random() < .5) c.style.borderRadius = "50%";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 5000);
+  }
+}
+
+repeatBtn.addEventListener("click", () => {
+  if (!lastPrompt) return;
+  replayLine(lastPrompt);
+});
+
+/* ---------- screens (draft for approval) ---------- */
+function milliDiv(cls) {
+  return `<div class="milliSvg ${cls || ""}" id="owl"><svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="90" cy="168" rx="60" ry="8" fill="#254f3b" opacity=".18"/><path d="M136 152Q166 142 158 116" fill="none" stroke="#f7f0e0" stroke-width="13" stroke-linecap="round" class="tail"/><ellipse cx="90" cy="132" rx="44" ry="36" fill="#fffdf8"/><ellipse cx="90" cy="141" rx="24" ry="23" fill="#ffffff"/><ellipse cx="52" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="128" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="90" cy="76" rx="50" ry="44" fill="#fffdf8"/><ellipse cx="44" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(7 44 82)"/><ellipse cx="136" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(-7 136 82)"/><ellipse cx="90" cy="97" rx="25" ry="17" fill="#ffffff"/><g class="eyes"><ellipse cx="70" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><ellipse cx="110" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><circle cx="72" cy="68.5" r="2.4" fill="white"/><circle cx="112" cy="68.5" r="2.4" fill="white"/></g><path d="M82 88Q90 84 98 88Q97 96 90 96Q83 96 82 88Z" fill="#43382e"/><g class="mouthg"><path class="mouth" d="M78 101Q90 123 102 101Z" fill="#b8485f"/><path class="tongue" d="M84 108Q90 119 96 108Z" fill="#f08a9a"/></g><path d="M90 96V101M90 101Q83 107 77 102M90 101Q97 107 103 102" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="88" rx="8" ry="5" fill="#f6e8d2"/><ellipse cx="118" cy="88" rx="8" ry="5" fill="#f6e8d2"/></svg></div>`;
+}
+
+function startScreen() {
+  session++;
+  setBubble("היי! אני מִילִי! 🐶");
+  lastPrompt = { t: "היי! אני מילי!", lang: "he" };
+  stage.innerHTML = `
+    <div id="startWrap">
+      <div class="milliBig">${milli_svg}</div>
+      <p class="title">שיעור 3 · פירות 🍎</p>
+      <p class="subtitle">עם מילי גורת הלברדור</p>
+      <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
+      <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
+      <p class="draftNote">טיוטה לאישור אבא: מילי מדריכה במקום לילי. הקלטות הקול של מילי לשיעור המלא יופקו אחרי האישור.</p>
+    </div>`;
+  document.getElementById("startBtn").addEventListener("click", () => { Sfx.tap(); Speech.unlock(); Player.unlock(); intro(); });
+}
+
+async function intro() {
+  const s = ++session;
+  repeatBtn.style.visibility = "visible";
+  const wrap = document.getElementById("startWrap");
+  if (wrap) wrap.querySelector(".milliBig").id = "owlBigM";
+  stage.innerHTML = `<div id="startWrap"><div class="milliBig" id="owlBigM">${milli_svg}</div>
+    <div class="bigcard" id="bigcard" style="border-color:#FF6B6B">
+      <div class="emo">🍎</div>
+      <div class="word">apple</div>
+    </div>
+    <div class="hint">לחצי על התמונה כדי לשמוע 🔊</div></div>`;
+  const card = document.getElementById("bigcard");
+  card.addEventListener("click", () => {
+    Sfx.tap();
+    replayLine({ t: "apple", lang: "en" });
+  });
+  const owlBig = document.getElementById("owlBigM");
+  await speakLines([
+    { key: "he/intro1", t: "היי " + MIA + ", שמחה לראות אותך.", lang: "he", html: "היי " + MIA + "! 👋", pauseAfter: 300 },
+    { t: "היום נלמד פירות באנגלית!", lang: "he", html: "היום לומדים: פירות! 🍎🍌🍇", pauseAfter: 400 },
+    { t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">apple</span>', pauseAfter: 150 },
+    { t: "apple", lang: "en", html: '<span class="en">apple</span> 🗣️', pauseAfter: 300 },
+    { key: "he/yourturn", t: "עכשיו תורך, מיה!", lang: "he", html: "עכשיו תורך, מיה! 📢" }
+  ], s);
+  if (!alive(s)) return;
+  await sleep(2200);
+  if (!alive(s)) return;
+  await speakLines([{ key: "he/praise1", t: "כל הכבוד, " + MIA + ".", lang: "he", html: "כל הכבוד " + MIA + "! 🌟" }], s);
+}
+
+startScreen();
+</script>
+</body>
+</html>

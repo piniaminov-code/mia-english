@@ -453,7 +453,7 @@ function startScreen() {
       <p class="title">האנגלית של מיה</p>
       <p class="subtitle">שיעור 2 · צבעים 🎨</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
-      <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a></div>
+      <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="game2.html">🎈 משחק הבלונים</a></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור של רבע שעה עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>
@@ -632,7 +632,8 @@ async function finale(s) {
       <div class="starRow">${Array(Math.min(stars, 10)).fill(0).map((_, i) => `<span style="animation-delay:${i * 0.12}s">⭐</span>`).join("")}</div>
       <p class="title">כל הכבוד ${MIA}!</p>
       <p class="subtitle">סיימת שיעור שלם באנגלית!</p>
-      <button class="cta coral" id="againBtn">🔁 עוד פעם!</button>
+      <a class="cta coral" href="game2.html" style="text-decoration:none">🎈 למשחק הבלונים!</a>
+      <button class="cta" id="againBtn" style="margin-top:12px">🔁 עוד פעם</button>
       <a class="navlink" href="index.html" style="margin-top:12px">🐶 שיעור 1: חיות</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
