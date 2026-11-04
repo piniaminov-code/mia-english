@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>האנגלית של מיה - שיעור 3 · מספרים (טיוטה)</title>
+<title>האנגלית של מיה - שיעור 3 · מספרים</title>
 <style>
   :root{
     --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
@@ -145,6 +145,14 @@
   @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
   @keyframes breathe{50%{transform:translateY(-3px) rotate(1deg)}}
   @keyframes talk{50%{transform:translateY(-4px) rotate(3deg)}}
+  .bigcard .digit{direction:ltr; font-size:min(26vw,110px); font-weight:900; color:var(--coral); line-height:1;}
+  .bigcard .objs{font-size:20px; letter-spacing:2px; direction:ltr; min-height:26px;}
+  .opt .digit{direction:ltr; font-size:min(18vw,76px); font-weight:900; color:var(--ink); line-height:1;}
+  .opt .word{direction:ltr; font-size:16px; font-weight:800; opacity:.6;}
+  .opt{flex-direction:column; gap:2px;}
+  .parade .pitem .digit{direction:ltr; font-size:40px; font-weight:900; color:var(--ink); line-height:1;}
+  .parade .pitem{width:18%; border-radius:16px;}
+  .parade{gap:7px; width:min(94vw,440px);}
   .draftNote{font-size:13px; opacity:.55; max-width:300px; text-align:center;}
 </style>
 </head>
@@ -170,9 +178,14 @@
   <div id="stage"></div>
 </div>
 
-<script src="faudio1.js"></script>
-<script src="faudio2.js"></script>
-<script src="l2audio5.js?v=pron1"></script>
+<script src="l3audio1.js?v=l3a1"></script>
+<script src="l3audio2.js?v=l3a1"></script>
+<script src="l3audio3.js?v=l3a1"></script>
+<script src="l3audio4.js?v=l3a1"></script>
+<script src="l3audio5.js?v=l3a1"></script>
+<script src="l3audio6.js?v=l3a1"></script>
+<script src="l3audio7.js?v=l3a1"></script>
+<script src="l3audio8.js?v=l3a1"></script>
 
 
 
@@ -364,12 +377,17 @@ const Sfx = (() => {
 })();
 
 /* ---------- lesson data ---------- */
-const ANIMALS = [
-  { en: "red",    he: "אדום",  heThis: "זה אדום",  emo: "🔴", color: "#FF6B6B" },
-  { en: "blue",   he: "כחול",  heThis: "זה כחול",  emo: "🔵", color: "#4D96FF" },
-  { en: "yellow", he: "צהוב",  heThis: "זה צהוב",  emo: "🟡", color: "#FFD93D" },
-  { en: "green",  he: "ירוק",  heThis: "זה ירוק",  emo: "🟢", color: "#6BCB77" },
-  { en: "purple", he: "סגול",  heThis: "זה סגול",  emo: "🟣", color: "#C084FC" }
+const NUMBERS = [
+  { en: "one",   digit: "1",  he: "אחת",   obj: "🍎" },
+  { en: "two",   digit: "2",  he: "שתיים", obj: "🐤" },
+  { en: "three", digit: "3",  he: "שלוש",  obj: "🎈" },
+  { en: "four",  digit: "4",  he: "ארבע",  obj: "🦋" },
+  { en: "five",  digit: "5",  he: "חמש",   obj: "⭐" },
+  { en: "six",   digit: "6",  he: "שש",    obj: "🍓" },
+  { en: "seven", digit: "7",  he: "שבע",   obj: "🐠" },
+  { en: "eight", digit: "8",  he: "שמונה", obj: "🌸" },
+  { en: "nine",  digit: "9",  he: "תשע",   obj: "🍪" },
+  { en: "ten",   digit: "10", he: "עשר",   obj: "🐞" }
 ];
 const PRAISES = [
   { key: "he/praise1", t: "כל הכבוד " + MIA + "!", lang: "he" },
@@ -441,8 +459,8 @@ repeatBtn.addEventListener("click", () => {
   replayLine(lastPrompt);
 });
 
-/* ---------- screens (draft for approval) ---------- */
-const MILLI_SVG = `<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="90" cy="168" rx="60" ry="8" fill="#254f3b" opacity=".18"/><path d="M136 152Q166 142 158 116" fill="none" stroke="#f7f0e0" stroke-width="13" stroke-linecap="round" class="tail"/><ellipse cx="90" cy="132" rx="44" ry="36" fill="#fffdf8"/><ellipse cx="90" cy="141" rx="24" ry="23" fill="#ffffff"/><ellipse cx="52" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="128" cy="160" rx="16" ry="10" fill="#fffdf8"/><ellipse cx="90" cy="76" rx="50" ry="44" fill="#fffdf8"/><ellipse cx="44" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(7 44 82)"/><ellipse cx="136" cy="82" rx="13" ry="31" fill="#eee2c9" transform="rotate(-7 136 82)"/><ellipse cx="90" cy="97" rx="25" ry="17" fill="#ffffff"/><g class="eyes"><ellipse cx="70" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><ellipse cx="110" cy="71" rx="6.5" ry="8.5" fill="#43382e"/><circle cx="72" cy="68.5" r="2.4" fill="white"/><circle cx="112" cy="68.5" r="2.4" fill="white"/></g><path d="M82 88Q90 84 98 88Q97 96 90 96Q83 96 82 88Z" fill="#43382e"/><g class="mouthg"><path class="mouth" d="M78 101Q90 123 102 101Z" fill="#b8485f"/><path class="tongue" d="M84 108Q90 119 96 108Z" fill="#f08a9a"/></g><path d="M90 96V101M90 101Q83 107 77 102M90 101Q97 107 103 102" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="88" rx="8" ry="5" fill="#f6e8d2"/><ellipse cx="118" cy="88" rx="8" ry="5" fill="#f6e8d2"/></svg>`;
+/* ---------- screens ---------- */
+const MILLI_SVG = document.querySelector("#owl .milliSvg").innerHTML;
 
 function startScreen() {
   session++;
@@ -455,26 +473,208 @@ function startScreen() {
       <p class="subtitle">עם מילי, גורת הלברדור הלבנה 🐶</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
       <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
-      <p class="draftNote">טיוטה לאישור אבא: מילי מדריכה במקום לילי. שמע המילים יוקלט בקול המאושר רק אחרי האישור.</p>
+      <details class="parent">
+        <summary>להורים 💛</summary>
+        <p>שיעור של רבע שעה עם מילי: מיה לומדת לספור מ-one עד ten, שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות.</p>
+      </details>
     </div>`;
   document.getElementById("startBtn").addEventListener("click", () => { Sfx.tap(); Speech.unlock(); Player.unlock(); intro(); });
 }
 
 async function intro() {
   const s = ++session;
+  setSeg("seg-learn");
   repeatBtn.style.visibility = "visible";
-  stage.innerHTML = `<div id="startWrap"><div class="milliBig" id="owlBigM"><div class="milliSvg">${MILLI_SVG}</div></div>
-    <div class="bigcard" id="bigcard" style="border-color:#FF6B6B">
-      <div class="emo">1️⃣</div>
-      <div class="word">one</div>
-    </div>
-    <div class="hint">ככה תיראה כרטיס המילה 🌟</div></div>`;
+  stage.innerHTML = "";
   await speakLines([
-    { key: "he/intro1", t: "היי " + MIA + ", שמחה לראות אותך.", lang: "he", html: "היי " + MIA + "! שמחה לראות אותך 👋" }
+    { key: "he/intro1", t: "היי " + MIA + "! שמחה לראות אותך שוב!", lang: "he", html: "היי " + MIA + "! שמחה לראות אותך שוב 👋", pauseAfter: 300 },
+    { key: "he/l3intro2", t: "אני מילי, והיום נלמד מספרים באנגלית! מאחת עד עשר!", lang: "he", html: "היום לומדים: מספרים! 1️⃣-🔟", pauseAfter: 500 },
+    { key: "he/intro3", t: "מוכנה? בואי נתחיל!", lang: "he", html: "מוכנה? בואי נתחיל! 🎉" }
   ], s);
+  if (!alive(s)) return;
+  teachWord(0, s);
 }
 
-startScreen();
+async function teachWord(i, s) {
+  if (!alive(s)) return;
+  if (i >= NUMBERS.length) return game1Intro(s);
+  if (i === 5) {
+    await speakLines([
+      { key: "he/l3mid", t: "וואו! את כבר יודעת לספור עד חמש! עכשיו נלמד עד עשר!", lang: "he", html: "סופרים עד עשר! 🔟", pauseAfter: 300 }
+    ], s);
+    if (!alive(s)) return;
+  }
+  const n = NUMBERS[i];
+  stage.innerHTML = `
+    <div class="bigcard" id="bigcard" style="border-color:var(--coral)">
+      <div class="digit">${n.digit}</div>
+      <div class="objs">${n.obj.repeat(i + 1)}</div>
+      <div class="word">${n.en}</div>
+    </div>
+    <div class="hint">לחצי על הכרטיס כדי לשמוע שוב 🔊</div>`;
+  const card = document.getElementById("bigcard");
+  card.addEventListener("click", () => {
+    Sfx.tap();
+    replayLine({ key: "en/" + n.en, t: n.en, lang: "en" });
+  });
+  await speakLines([
+    { key: "he/this_" + n.en, t: "המספר " + n.he + "!", lang: "he", html: "המספר " + n.he + "! " + n.obj, pauseAfter: 200 },
+    { key: "he/ineng", t: "באנגלית אומרים:", lang: "he", html: 'באנגלית אומרים: <span class="en">' + n.en + '</span>', pauseAfter: 150 },
+    { key: "en/" + n.en, t: n.en, lang: "en", html: '<span class="en">' + n.en + '</span> 🗣️', pauseAfter: 350 },
+    { key: "en/" + n.en, t: n.en + "!", lang: "en", html: '<span class="en">' + n.en + '</span> 🗣️', pauseAfter: 250 },
+    { key: "he/yourturn", t: "עכשיו תורך, מיה!", lang: "he", html: "עכשיו תורך, מיה! 📢", pauseAfter: 100 },
+    { key: "en_slow/" + n.en, t: n.en, lang: "en", html: '<span class="en">' + n.en + '</span> 📢' }
+  ], s);
+  if (!alive(s)) return;
+  await sleep(2400);
+  if (!alive(s)) return;
+  owl.classList.add("talking");
+  await sayLine(PRAISES[Math.floor(Math.random() * PRAISES.length)]);
+  owl.classList.remove("talking");
+  if (!alive(s)) return;
+  if (n.en === "three") {
+    await speakLines([{ key: "he/move_jump3", t: "קומי קומי! קפצי שלוש פעמים!", lang: "he", html: "קומי וקפצי 3 פעמים! 🐰" }], s);
+    if (!alive(s)) return;
+    await sleep(4000);
+  }
+  if (n.en === "eight") {
+    await speakLines([{ key: "he/move_clap5", t: "קומי קומי! מחאי כפיים חמש פעמים!", lang: "he", html: "קומי ומחאי כפיים 5 פעמים! 👏" }], s);
+    if (!alive(s)) return;
+    await sleep(4000);
+  }
+  if (!alive(s)) return;
+  teachWord(i + 1, s);
+}
+
+function optionsRow(target, count) {
+  const others = shuffle(NUMBERS.filter(n => n.en !== target.en)).slice(0, (count || 3) - 1);
+  return shuffle([target].concat(others));
+}
+
+async function game1Intro(s) {
+  setSeg("seg-g1");
+  stage.innerHTML = "";
+  await speakLines([
+    { key: "he/l3g1intro1", t: "וואו, למדת עשר מילים חדשות!", lang: "he", html: "עשר מילים חדשות! 🌟", pauseAfter: 400 },
+    { key: "he/l3g1intro2", t: "עכשיו משחק! אני אשאל, ואת תלחצי על המספר הנכון!", lang: "he", html: "עכשיו משחק! 🎮 לחצי על המספר הנכון" }
+  ], s);
+  if (!alive(s)) return;
+  gameRound(s, 1, shuffle(NUMBERS), game1Outro);
+}
+
+async function game1Outro(s) {
+  await speakLines([
+    { key: "he/l3g2intro", t: "כל הכבוד! עכשיו משחק אחרון, בלי רמזים! אני אומרת מספר, ואת מוצאת אותו!", lang: "he", html: "משחק אחרון: בלי רמזים! 👂" }
+  ], s);
+  if (!alive(s)) return;
+  gameRound(s, 2, shuffle(NUMBERS), recap);
+}
+
+function gameRound(s, gameNo, order, doneCb) {
+  setSeg(gameNo === 1 ? "seg-g1" : "seg-g2");
+  let round = 0;
+  const play = async () => {
+    if (!alive(s)) return;
+    if (round >= order.length) return doneCb(s);
+    const target = order[round];
+    const opts = optionsRow(target, 3);
+    stage.innerHTML = `<div class="optgrid">${opts.map(o =>
+      `<div class="opt" data-en="${o.en}"><div class="digit">${o.digit}</div><div class="word">${o.en}</div></div>`).join("")}</div>
+      <div class="hint">${gameNo === 1 ? "איפה ה..." : "מה שמעת?"} 🔊 לחצי עליי לשמוע שוב</div>`;
+    await sleep(500);
+    if (!alive(s)) return;
+    if (gameNo === 1) {
+      await speakLines([
+        { key: "he/where", t: "איפה ה", lang: "he", html: 'איפה ה<span class="en">' + target.en + '</span>?', pauseAfter: 50 },
+        { key: "en/" + target.en, t: target.en + "?", lang: "en", html: 'איפה ה<span class="en">' + target.en + '</span>?' }
+      ], s);
+    } else {
+      await speakLines([{ key: "en/" + target.en, t: target.en, lang: "en", html: "👂 מה שמעת?" }], s);
+      if (!alive(s)) return;
+      await sleep(300);
+      if (!alive(s)) return;
+      owl.classList.add("talking"); await sayLine({ key: "en/" + target.en, t: target.en, lang: "en" }); owl.classList.remove("talking");
+    }
+    if (!alive(s)) return;
+    let locked = false;
+    stage.querySelectorAll(".opt").forEach(el => {
+      el.addEventListener("click", async () => {
+        if (locked || !alive(s)) return;
+        Speech.unlock();
+        if (el.dataset.en === target.en) {
+          locked = true;
+          el.classList.add("right");
+          Sfx.good(); Sfx.star(); cheer();
+          addStar(el);
+          await speakLines([Object.assign({}, PRAISES[Math.floor(Math.random() * PRAISES.length)], { html: "🌟 " + target.digit + ' <span class="en">' + target.en + '</span>!' })], s);
+          if (!alive(s)) return;
+          round++;
+          play();
+        } else {
+          locked = true;
+          el.classList.add("wrong");
+          Sfx.wrong();
+          stage.querySelector(".optgrid").classList.add("shake");
+          await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
+          setTimeout(() => { stage.querySelector(".optgrid")?.classList.remove("shake"); locked = false; }, 300);
+          if (!alive(s)) return;
+          if (gameNo === 1) { owl.classList.add("talking"); await sayLine({ key: "he/where", t: "איפה ה", lang: "he" }); await sayLine({ key: "en/" + target.en, t: target.en + "?", lang: "en" }); owl.classList.remove("talking"); }
+          else { owl.classList.add("talking"); await sayLine({ key: "en/" + target.en, t: target.en, lang: "en" }); owl.classList.remove("talking"); }
+        }
+      });
+    });
+  };
+  play();
+}
+
+async function recap(s) {
+  setSeg("seg-end");
+  stage.innerHTML = `<div class="parade">${NUMBERS.map(n =>
+    `<div class="pitem" id="p-${n.en}"><div class="digit">${n.digit}</div><div class="word">${n.en}</div></div>`).join("")}</div>`;
+  await speakLines([
+    { key: "he/recap", t: "בואי נזכור מה למדנו היום!", lang: "he", html: "מה למדנו היום? 🌈", pauseAfter: 300 },
+    { key: "he/l3count", t: "בואי נספור ביחד באנגלית!", lang: "he", html: "נספור ביחד! 🔢", pauseAfter: 200 }
+  ], s);
+  for (const n of NUMBERS) {
+    if (!alive(s)) return;
+    document.querySelectorAll(".pitem").forEach(p => p.classList.remove("now"));
+    const el = document.getElementById("p-" + n.en);
+    el.classList.add("now");
+    setBubble('<span class="en">' + n.en + '</span> - ' + n.he + ' ' + n.obj);
+    owl.classList.add("talking");
+    await sayLine({ key: "en/" + n.en, t: n.en, lang: "en" });
+    owl.classList.remove("talking");
+    if (!alive(s)) return;
+    await sleep(350);
+  }
+  if (!alive(s)) return;
+  finale(s);
+}
+
+async function finale(s) {
+  setSeg("seg-end");
+  Sfx.fanfare();
+  confetti(70);
+  stage.innerHTML = `
+    <div id="finaleWrap">
+      <div class="sticker">🏅</div>
+      <div class="starRow">${Array(Math.min(stars, 10)).fill(0).map((_, i) => `<span style="animation-delay:${i * 0.12}s">⭐</span>`).join("")}</div>
+      <p class="title">כל הכבוד ${MIA}!</p>
+      <p class="subtitle">את יודעת לספור באנגלית עד עשר!</p>
+      <button class="cta" id="againBtn">🔁 עוד פעם</button>
+      <div class="navrow" style="margin-top:12px"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
+    </div>`;
+  try { localStorage.setItem("mia-english-lesson3", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
+  await speakLines([
+    { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימת שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
+    { key: "he/l3finale2", t: "למדת היום לספור באנגלית מאחת עד עשר!", lang: "he", html: "one · two · three · four · five · six · seven · eight · nine · ten", pauseAfter: 300 },
+    { key: "he/finale3", t: "את אלופת אנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "את אלופת אנגלית! 👋💛" }
+  ], s);
+  if (!alive(s)) return;
+  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
+}
+
+
 </script>
 </body>
 </html>
