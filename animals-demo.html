@@ -3,7 +3,7 @@
 @keyframes breathe{50%{transform:translateY(-3px) rotate(1deg)}}@keyframes float{50%{transform:translateY(-9px) rotate(-2deg)}}@keyframes tail{50%{transform:rotate(-8deg)}}@keyframes talk{50%{transform:translateY(-4px) rotate(3deg)}}@keyframes celebrate{50%{transform:translateY(-28px) rotate(-5deg)}}@keyframes wiggle{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}@keyframes flutter{to{scale:.6 1}}@keyframes fly{30%{transform:translate(70px,30px)}70%{transform:translate(-60px,90px)}}@keyframes spark{to{transform:translate(var(--dx),var(--dy)) rotate(120deg);opacity:0}}
 @media(max-width:650px){header{padding:13px 18px}header b{font-size:18px}header a{max-width:95px;text-align:left;line-height:1.5}.shell{padding:0 10px}.world{height:56svh;min-height:360px;max-height:550px;border-radius:25px 25px 0 0}.animal{width:32%;max-width:none}.cat{left:50%;bottom:10%}.rabbit{left:81%;bottom:21.5%}.bird{width:25%;left:64%;bottom:39%}.guide{left:1%;top:auto;bottom:3%;width:22%}.plaque{font-size:13px;top:15px;padding:10px 15px}.dock{padding:19px 19px 21px;display:block;border-radius:0 0 25px 25px}.copy h1{font-size:23px}.copy p{font-size:14px;min-height:23px}.controls{margin-top:16px;justify-content:center}.primary{flex:1;padding:14px 20px;max-width:260px}.note{margin-top:13px}.steps{top:58px;right:10px;gap:9px;padding:8px 12px}.glow{left:0;width:50%}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 
-.guide{left:8%;bottom:3%;width:24%;max-width:230px;z-index:3}
+.guide{left:8%;bottom:3%;width:24%;max-width:230px;z-index:4}
 .guide svg{transform-origin:50% 95%;overflow:visible}
 .guide .eyes{transform-box:fill-box;transform-origin:50% 50%;animation:blink 4.6s infinite}
 .guide .mouthg{transform-box:fill-box;transform-origin:50% 0}
@@ -100,7 +100,7 @@ async function walkPath(id,pts){if(pts.length<2)return true;lily.classList.add('
 const mob=()=>matchMedia('(max-width:650px)').matches;
 let ROUTES={};
 function layout(){const s=sliceRect(),m=mob(),X=f=>s.x0+s.vw*f,Y=y=>Math.min(y,s.y0+s.vh-14);
- const c={x:X(m?.80:.76),y:Y(m?606:600)},b={x:X(m?.56:.42),y:Y(m?470:450)};
+ const c={x:X(m?.80:.76),y:Y(m?606:600)},b={x:Math.min(645,s.x0+s.vw-70),y:Y(318)};
  [[CAT,c],[BIRD,b]].forEach(([el,p])=>{const q=scenePct(p.x,p.y);el.style.left=q.x+'%';el.style.bottom=q.b+'%';});
  ROUTES={cat:[[c.x-(m?165:190),Y(c.y+2)]],bird:[[X(m?.36:.30),Y(m?600:604)],[b.x-(m?150:160),Y(b.y+34)]]};}
 layout();addEventListener('resize',()=>{if(!lily.classList.contains('walking'))layout();});
