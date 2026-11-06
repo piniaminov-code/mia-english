@@ -20,7 +20,7 @@
 @keyframes jump{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(-22px) scale(.97,1.05)}60%{transform:translateY(0) scale(1.05,.95)}}
 @keyframes tilt{0%,100%{transform:rotate(0)}25%,70%{transform:rotate(-9deg) translateX(-3px)}}
 @media(prefers-reduced-motion:reduce){.guide .eyes,.guide .tail{animation:none}}
-@media(max-width:650px){.guide{left:0;bottom:0;width:27%;max-width:115px}}
+@media(max-width:650px){.guide{left:0;bottom:0;width:38%;max-width:170px}}
 
 .guide.walk{animation:stroll 3s ease-in-out;z-index:5}
 .guide.walk svg{animation:waddle .38s ease-in-out infinite}
@@ -37,6 +37,7 @@
 .animal.hit .ballg{animation:celebrate .7s ease-out 2}.animal.oops{animation:wiggle .5s}
 .en{font-weight:700;text-transform:lowercase}
 
+.guide{pointer-events:none}
 .guide img{width:100%;height:auto;display:block;user-select:none;animation:breathe 4s ease-in-out infinite;transform-origin:50% 95%;filter:drop-shadow(0 8px 10px #1c463a30)}
 .guide.talking img{animation:talk .5s ease-in-out infinite}
 .guide.happy img,.guide.happy.talking img{animation:jump .55s ease-out 2}
