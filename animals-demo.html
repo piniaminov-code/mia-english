@@ -99,10 +99,10 @@ async function walkPath(id,pts){if(pts.length<2)return true;lily.classList.add('
 
 const mob=()=>matchMedia('(max-width:650px)').matches;
 let ROUTES={};
-function layout(){const s=sliceRect(),m=mob(),X=f=>s.x0+s.vw*f;
- const c={x:X(m?.80:.74),y:m?606:600},b={x:X(m?.56:.58),y:m?470:478};
+function layout(){const s=sliceRect(),m=mob(),X=f=>s.x0+s.vw*f,Y=y=>Math.min(y,s.y0+s.vh-14);
+ const c={x:X(m?.80:.76),y:Y(m?606:600)},b={x:X(m?.56:.42),y:Y(m?470:450)};
  [[CAT,c],[BIRD,b]].forEach(([el,p])=>{const q=scenePct(p.x,p.y);el.style.left=q.x+'%';el.style.bottom=q.b+'%';});
- ROUTES={cat:[[c.x-(m?165:190),c.y+2]],bird:[[X(m?.36:.30),m?600:604],[b.x-(m?150:160),b.y+34]]};}
+ ROUTES={cat:[[c.x-(m?165:190),Y(c.y+2)]],bird:[[X(m?.36:.30),Y(m?600:604)],[b.x-(m?150:160),Y(b.y+34)]]};}
 layout();addEventListener('resize',()=>{if(!lily.classList.contains('walking'))layout();});
 function setHappy(el,on){el.classList.toggle('happy',on);}
 async function playAt(el,id,ms){lily.classList.add('playing');playBall=el;depthSort();miliImg.src=PLAYF;el.classList.add('bump');let left=ms,flap=0;while(left>0){if(id!==run){abortWalk();el.classList.remove('bump');return false;}if(paused){if(!await waitResume(id)){abortWalk();el.classList.remove('bump');return false;}continue;}if(el===BIRD){setHappy(el,(flap++%2)===0);}const step=Math.min(240,left);await new Promise(r=>setTimeout(r,step));left-=step;}el.classList.remove('bump');lily.classList.remove('playing');playBall=null;return true;}
