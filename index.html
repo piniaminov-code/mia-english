@@ -174,6 +174,22 @@
 "use strict";
 const MIA = "מִיָּה";
 
+/* ---------- diagnostics: remember failures so a recurrence is explainable ---------- */
+(function () {
+  function logErr(kind, msg) {
+    try {
+      const k = "mia-l1-errlog";
+      const arr = JSON.parse(localStorage.getItem(k) || "[]");
+      arr.push({ kind: kind, msg: String(msg).slice(0, 200), at: Date.now() });
+      while (arr.length > 20) arr.shift();
+      localStorage.setItem(k, JSON.stringify(arr));
+    } catch (e) {}
+  }
+  window.addEventListener("error", e => logErr("error", (e.message || "") + " @" + String(e.filename || "").split("/").pop() + ":" + (e.lineno || 0)));
+  window.addEventListener("unhandledrejection", e => logErr("rejection", (e.reason && (e.reason.message || e.reason.name)) || e.reason));
+  window.__logErr = logErr;
+})();
+
 /* ---------- speech engine (device TTS, fallback only) ---------- */
 const Speech = (() => {
   let utterRef = null, speakTimer, resolveCurrent = null, enVoice = null, heVoice = null;
@@ -191,15 +207,15 @@ const Speech = (() => {
   ["pointerdown", "touchstart", "keydown", "click"].forEach(ev =>
     window.addEventListener(ev, () => { lastGesture = Date.now(); }, { capture: true, passive: true }));
   function warmUp() {
-    if (warmedUp || !hasSynth()) return; warmedUp = true;
-    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; window.speechSynthesis.speak(u); } catch (e) {}
+    // no silent warm-up utterance: on iOS, speechSynthesis grabs the audio
+    // session and can keep the lesson's recorded clips from playing
+    warmedUp = true;
   }
   if (hasSynth()) window.addEventListener("pointerdown", warmUp, { once: true, capture: true });
   function unlock() {
-    if (!hasSynth() || Date.now() - lastUnlock < 1500) return;
+    // intentionally no silent utterance (see warmUp); device TTS remains only
+    // as the fallback for the one unrecorded start-screen line
     lastUnlock = Date.now();
-    try { const s = window.speechSynthesis; if (s.speaking || s.pending) return;
-      const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "en-US"; s.speak(u); } catch (e) {}
   }
   function say(text, lang) {
     lang = lang || "he";
@@ -272,6 +288,7 @@ const Player = (() => {
       const retryOrFail = (why) => {
         if (done || retryTimer) return;
         window.__audioFail = { key: key, via: why, attempt: attempts, at: Date.now() };
+      if (window.__logErr) window.__logErr("audiofail", key + " via " + why + " attempt " + attempts);
         if (attempts < 3) retryTimer = setTimeout(() => { retryTimer = null; attempt(); }, 350);
         else finish(false);
       };
