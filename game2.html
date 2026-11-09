@@ -183,7 +183,7 @@
 <script src="l2audio1.js?v=fem1"></script>
 <script src="l2audio2.js?v=fem1"></script>
 <script src="l2audio3.js?v=fem1"></script>
-<script src="l2audio4.js?v=fem1"></script>
+<script src="l2audio4.js?v=bal1"></script>
 <script src="l2audio5.js?v=fem1"></script>
 <script>
 "use strict";
@@ -543,8 +543,7 @@ async function playRound(s, roundIdx) {
     await sleep(450);
     if (!alive(s)) return;
     await speakLines([
-      { key: "he/where", t: "איפה ה", lang: "he", html: 'איפה ה<span class="en">' + target.en + '</span>?', pauseAfter: 50 },
-      { key: "en/" + target.en, t: target.en + "?", lang: "en", html: 'איפה ה<span class="en">' + target.en + '</span>?' }
+      { key: "he/where_balloon_" + target.en, t: "איפה הבלון בצבע " + target.en + "?", lang: "he", html: 'איפה הבלון בצבע <span class="en">' + target.en + '</span>?' }
     ], s);
     if (!alive(s)) return;
     let locked = false;
@@ -570,8 +569,7 @@ async function playRound(s, roundIdx) {
           setTimeout(() => { el.classList.remove("shake"); locked = false; }, 300);
           if (!alive(s)) return;
           owl.classList.add("talking");
-          await sayLine({ key: "he/where", t: "איפה ה", lang: "he" });
-          await sayLine({ key: "en/" + target.en, t: target.en + "?", lang: "en" });
+          await sayLine({ key: "he/where_balloon_" + target.en, t: "איפה הבלון בצבע " + target.en + "?", lang: "he" });
           owl.classList.remove("talking");
         }
       });
