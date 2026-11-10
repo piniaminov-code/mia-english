@@ -108,7 +108,8 @@
   #startWrap .owlBig{transform:scale(1.5); margin:26px 0 30px;}
   .title{font-size:30px; font-weight:900; margin:0;}
   .subtitle{font-size:18px; font-weight:700; opacity:.75; margin:0;}
-  .navrow{margin-top:14px; display:flex; gap:10px; justify-content:center;}
+  .navrow{margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+  .navrow .navlink{flex:0 1 145px;}
   .navlink{display:inline-block; background:#fff; border-radius:999px; padding:10px 18px; font-weight:800; color:var(--ink); text-decoration:none; box-shadow:var(--shadow); font-size:15px;}
   details.parent{background:rgba(255,255,255,.7); border-radius:16px; padding:8px 14px; font-size:14px; max-width:340px; box-shadow:var(--shadow);}
   details.parent summary{cursor:pointer; font-weight:800;}
@@ -489,7 +490,7 @@ function startScreen() {
       <p class="title">שיעור 3 · מספרים 1-10 🔢</p>
       <p class="subtitle">עם מילי, גורת הלברדור הלבנה 🐶</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
-      <div class="navrow"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
+      <div class="navrow"><a class="navlink" href="lessons.html">🏠 כל השיעורים</a> <a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור של רבע שעה עם מילי: מיה לומדת לספור מ-one עד ten, שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות.</p>
@@ -679,7 +680,7 @@ async function finale(s) {
       <p class="title">כל הכבוד ${MIA}!</p>
       <p class="subtitle">את יודעת לספור באנגלית עד עשר!</p>
       <button class="cta" id="againBtn">🔁 עוד פעם</button>
-      <div class="navrow" style="margin-top:12px"><a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
+      <div class="navrow" style="margin-top:12px"><a class="navlink" href="lessons.html">🏠 כל השיעורים</a> <a class="navlink" href="index.html">🐶 שיעור 1: חיות</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a></div>
     </div>`;
   try { localStorage.setItem("mia-english-lesson3", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([

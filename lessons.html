@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>האנגלית של מיה - כל השיעורים</title>
+<link rel="stylesheet" href="engine.css?v=1">
+</head>
+<body>
+<div class="cloud c1"></div><div class="cloud c2"></div>
+<div id="app">
+  <div id="picker">
+    <h1>האנגלית של מיה 🦉</h1>
+    <p class="sub">בחרי שיעור, מיה! 💛</p>
+    <div class="pickgrid" id="grid"></div>
+  </div>
+</div>
+<script src="lessons-data.js?v=1"></script>
+<script src="live-lessons.js?v=1"></script>
+<script>
+"use strict";
+const OLD = {
+  1: { topic: "חיות", emoji: "🐶", href: "index.html" },
+  2: { topic: "צבעים", emoji: "🎨", href: "lesson2.html" },
+  3: { topic: "מספרים", emoji: "🔢", href: "lesson3.html" }
+};
+const upcomingTopics = ["צורות","רגשות","מזג אוויר","חלקי היום","חיות חווה","חיות ים","יצורים קטנים","פעולות","עוד פעולות","טבע","בבית","אוכל","בית ספר","הפכים","מקומות","היגיינה","יום הולדת","כלי אוכל","חזרה 1","חזרה 2"];
+const grid = document.getElementById("grid");
+let html = "";
+for (let i = 1; i <= 33; i++) {
+  const live = (typeof LIVE_LESSONS !== "undefined") && LIVE_LESSONS.includes(i);
+  let topic, emoji, href, storageKey;
+  if (i <= 3) { topic = OLD[i].topic; emoji = OLD[i].emoji; href = OLD[i].href; storageKey = "mia-english-lesson" + i; }
+  else { const L = LESSONS[i] || {topic: upcomingTopics[i-14] || "שיעור נוסף", emoji: "🔒"}; topic = L.topic; emoji = L.emoji; href = "lesson" + i + ".html"; storageKey = "mia-english-lesson" + i; }
+  let stars = "";
+  try {
+    const p = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (p && p.done) stars = '<div class="st">⭐ ' + (p.stars || 0) + '</div>';
+  } catch (e) {}
+  const cls = "pickcard" + (stars ? " done" : "") + (live ? "" : " soon");
+  const label = live ? ("שיעור " + i) : "בקרוב ✨";
+  html += '<a class="' + cls + '" href="' + (live ? href : "#") + '">' +
+    '<div class="emo">' + emoji + '</div>' +
+    '<div class="nm">' + label + '</div>' +
+    '<div class="nm" style="font-weight:600;opacity:.7">' + topic + '</div>' + stars + '</a>';
+}
+grid.innerHTML = html;
+</script>
+</body>
+</html>

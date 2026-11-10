@@ -108,7 +108,8 @@
   #startWrap .owlBig{transform:scale(1.5); margin:26px 0 30px;}
   .title{font-size:30px; font-weight:900; margin:0;}
   .subtitle{font-size:18px; font-weight:700; opacity:.75; margin:0;}
-  .navrow{margin-top:14px; display:flex; gap:10px; justify-content:center;}
+  .navrow{margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+  .navrow .navlink{flex:0 1 145px;}
   .navlink{display:inline-block; background:#fff; border-radius:999px; padding:10px 18px; font-weight:800; color:var(--ink); text-decoration:none; box-shadow:var(--shadow); font-size:15px;}
   details.parent{background:rgba(255,255,255,.7); border-radius:16px; padding:8px 14px; font-size:14px; max-width:340px; box-shadow:var(--shadow);}
   details.parent summary{cursor:pointer; font-weight:800;}
@@ -471,7 +472,7 @@ function startScreen() {
       <p class="title">האנגלית של מיה</p>
       <p class="subtitle">שיעור 1 · חיות 🐶</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
-      <div class="navrow"><a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a> <a class="navlink" href="lesson3.html">🔢 שיעור 3: מספרים</a></div>
+      <div class="navrow"><a class="navlink" href="lessons.html">🏠 כל השיעורים</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a> <a class="navlink" href="lesson3.html">🔢 שיעור 3: מספרים</a></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור של רבע שעה עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>
@@ -653,6 +654,7 @@ async function finale(s) {
       <a class="cta" id="milliBtn" href="forest-demo.html?from=lesson1" style="display:inline-block;text-decoration:none;margin-bottom:12px">🐶 משחק עם מילי</a>
       <button class="cta coral" id="againBtn">🔁 עוד פעם!</button>
       <a class="navlink" href="lesson2.html" style="margin-top:12px">🎨 שיעור 2: צבעים</a>
+      <a class="navlink" href="lessons.html">🏠 כל השיעורים</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   await speakLines([
