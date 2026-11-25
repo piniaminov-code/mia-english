@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>האנגלית של מיה - משחק הבלונים 🎈</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#BFE9FF">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="האנגלית של מיה">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
   :root{
     --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
@@ -67,7 +76,9 @@
 
 #audioRetry{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; background:rgba(255,248,240,.85);}
   /* stage */
-  #stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:0; position:relative;}
+  #stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:14px; min-height:0; position:relative; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 0;}
+  /* safe centering: centered when it fits, scrollable (never clipped at the top) when it does not */
+  #stage > :first-child{margin-top:auto;} #stage > :last-child{margin-bottom:auto;}
   .bigcard{
     background:var(--card); border-radius:32px; box-shadow:var(--shadow); display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; width:min(72vw,300px); aspect-ratio:1/1.02; cursor:pointer;
@@ -149,6 +160,8 @@
   @keyframes pop{35%{transform:scale(1.35); opacity:.95;}100%{transform:scale(1.9); opacity:0;}}
   .balloon.shake{animation:shakeX .3s;}
   @keyframes shakeX{25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+  /* short phones: keep the whole finale (and its nav buttons) on screen */
+  @media (max-height:700px){ .sticker{width:112px;height:112px;font-size:58px;} #finaleWrap{gap:10px;} #finaleWrap .title{font-size:26px;} }
 </style>
 </head>
 <body>
@@ -314,6 +327,7 @@ const Player = (() => {
         player.onended = () => finish(true);
         player.onerror = () => retryOrFail("error");
         try { player.src = u; } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent("clipplay", { detail: { key: key, el: player } })); } catch (e) {} // lip-sync (lipsync.js)
         const p = player.play();
         if (p && p.catch) p.catch((e) => retryOrFail(String(e && e.name || e)));
       };
@@ -495,6 +509,7 @@ function startScreen() {
       <p class="subtitle">אחרי שיעור 2 · צבעים 🎈</p>
       <button class="cta" id="startBtn">▶ בואי נשחק!</button>
       <div class="navrow"><a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a> <a class="navlink" href="index.html">🐶 שיעור 1: חיות</a></div>
+      <div class="pwaSlot"></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>משחק האזנה קצר אחרי שיעור הצבעים: לילי אומרת צבע באנגלית, ומיה לוחצת על הבלון הנכון. שלושה סבבים שמהירים, בלי קריאה ובלי הקלדה.</p>
@@ -587,19 +602,22 @@ async function finale(s) {
       <button class="cta coral" id="againBtn">🔁 עוד פעם!</button>
       <a class="navlink" href="lesson2.html" style="margin-top:12px">🎨 שיעור 2: צבעים</a>
       <a class="navlink" href="index.html" style="margin-top:4px">🐶 שיעור 1: חיות</a>
+      <a class="navlink" href="lessons.html" style="margin-top:4px">🏠 כל השיעורים</a>
     </div>`;
   try { localStorage.setItem("mia-english-game2", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
   Sfx.fanfare();
   confetti(60);
+  // wire "again" now, not after the closing speech: a tap during the goodbye must work
+  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-r1", "seg-r2", "seg-r3", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
   await speakLines([
     { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
     { key: "he/finale3", t: "מיה, אלופת האנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "מיה, אלופת האנגלית! 👋💛" }
   ], s);
-  if (!alive(s)) return;
-  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-r1", "seg-r2", "seg-r3", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
 }
 
 startScreen();
 </script>
+<script src="lipsync.js?v=2"></script>
+<script src="pwa.js?v=1"></script>
 </body>
 </html>

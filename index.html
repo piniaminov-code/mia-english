@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>האנגלית של מיה - שיעור 1</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#BFE9FF">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="האנגלית של מיה">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
   :root{
     --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
@@ -67,7 +76,9 @@
 
 #audioRetry{position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; background:rgba(255,248,240,.85);}
   /* stage */
-  #stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:0; position:relative;}
+  #stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:14px; min-height:0; position:relative; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:4px 0;}
+  /* safe centering: centered when it fits, scrollable (never clipped at the top) when it does not */
+  #stage > :first-child{margin-top:auto;} #stage > :last-child{margin-bottom:auto;}
   .bigcard{
     background:var(--card); border-radius:32px; box-shadow:var(--shadow); display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; width:min(72vw,300px); aspect-ratio:1/1.02; cursor:pointer;
@@ -134,6 +145,8 @@
 
   .flyStar{position:fixed; font-size:34px; z-index:60; pointer-events:none; transition:all .7s cubic-bezier(.5,-0.2,.3,1.2);}
   .hint{font-size:15px; font-weight:700; opacity:.6;}
+  /* short phones: keep the whole finale (and its nav buttons) on screen */
+  @media (max-height:700px){ .sticker{width:112px;height:112px;font-size:58px;} #finaleWrap{gap:10px;} #finaleWrap .title{font-size:26px;} }
 </style>
 </head>
 <body>
@@ -300,6 +313,7 @@ const Player = (() => {
         player.onended = () => finish(true);
         player.onerror = () => retryOrFail("error");
         try { player.src = u; } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent("clipplay", { detail: { key: key, el: player } })); } catch (e) {} // lip-sync (lipsync.js)
         const p = player.play();
         if (p && p.catch) p.catch((e) => retryOrFail(String(e && e.name || e)));
       };
@@ -473,6 +487,7 @@ function startScreen() {
       <p class="subtitle">שיעור 1 · חיות 🐶</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
       <div class="navrow"><a class="navlink" href="lessons.html">🏠 כל השיעורים</a> <a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a> <a class="navlink" href="lesson3.html">🔢 שיעור 3: מספרים</a></div>
+      <div class="pwaSlot"></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור של רבע שעה עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>
@@ -657,16 +672,18 @@ async function finale(s) {
       <a class="navlink" href="lessons.html">🏠 כל השיעורים</a>
     </div>`;
   try { localStorage.setItem("mia-english-lesson1", JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
+  // wire "again" now, not after the closing speech: a tap during the goodbye must work
+  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
   await speakLines([
     { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
     { key: "he/finale2", t: "למדנו היום חמש מילים חדשות באנגלית!", lang: "he", html: "dog · cat · bird · fish · rabbit", pauseAfter: 300 },
     { key: "he/finale3m", t: "מיה, אלופת האנגלית! עכשיו מילי רוצה לשחק איתך!", lang: "he", html: "מילי רוצה לשחק איתך! 🐶💛" }
   ], s);
-  if (!alive(s)) return;
-  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id).classList.remove("on")); intro(); });
 }
 
 startScreen();
 </script>
+<script src="lipsync.js?v=2"></script>
+<script src="pwa.js?v=1"></script>
 </body>
 </html>
