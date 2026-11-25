@@ -262,6 +262,9 @@ function gentleMiss(el, okEl) {
   el.appendChild(h);
   setTimeout(() => h.remove(), 1100);
   if (okEl && box && box.__missed >= 2) okEl.classList.add("hintGlow");
+  // Mia tilts her head encouragingly, and the right picture peeks out while its word is heard again
+  if (window.LipSync) LipSync.encourage();
+  if (okEl) { okEl.classList.remove("peek"); void okEl.offsetWidth; okEl.classList.add("peek"); setTimeout(() => okEl.classList.remove("peek"), 1400); }
 }
 
 /* ---------- guide character ----------

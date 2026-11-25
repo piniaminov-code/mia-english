@@ -259,7 +259,12 @@ details.parent .tip{font-size:13px; opacity:.8;}
 
 /* Mia avatar placements (picture + fallback handled by lipsync.js) */
 .finaleHero{position:relative; display:flex; justify-content:center;}
-.finaleAvatar{width:132px; height:132px;}
+.finaleAvatar{width:176px; height:176px;}
 .finaleAvatar.hasImg + .sticker{position:absolute; right:-14px; bottom:-8px; width:58px; height:58px; font-size:32px; box-shadow:0 0 0 4px #fff, 0 0 0 7px var(--sun), var(--shadow);}
-@media (max-height:700px){ .finaleAvatar{width:104px; height:104px;} }
+@media (max-height:700px){ .finaleAvatar{width:136px; height:136px;} }
 .heroAvatar{width:92px; height:92px; margin:8px auto 4px;}
+
+/* wrong answer: the right picture peeks out (gentle lift + soft glow) while its word replays */
+.peek{animation:peek 1.3s ease !important;}
+@keyframes peek{0%,100%{transform:none;} 30%,70%{transform:translateY(-6px) scale(1.06); box-shadow:var(--shadow), 0 0 0 6px rgba(255,201,61,.55);}}
+@media (prefers-reduced-motion: reduce){ .peek{animation:none !important; box-shadow:var(--shadow), 0 0 0 6px rgba(255,201,61,.55);} }
