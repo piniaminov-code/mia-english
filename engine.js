@@ -350,6 +350,7 @@ function startScreen() {
       <p class="subtitle">שיעור ${LESSON.id} · ${LESSON.topic} ${LESSON.emoji}</p>
       <button class="cta" id="startBtn">▶ בואי נתחיל!</button>
       <div class="navrow"><a class="navlink" href="lessons.html">🏠 כל השיעורים</a></div>
+      <div class="pwaSlot"></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>שיעור קצר עם מורה מדברת: מיה שומעת, חוזרת בקול ועונה בלחיצות - בלי קריאה ובלי הקלדה. מומלץ לשבת לידה בפעמים הראשונות, ובסוף לתת לה לספר מה למדה.</p>

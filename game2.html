@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>האנגלית של מיה - משחק הבלונים 🎈</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#BFE9FF">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="האנגלית של מיה">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
   :root{
     --cream:#FFF7EC; --ink:#4A3B31; --coral:#FF8A5C; --teal:#3DBEA8; --sun:#FFC93D;
@@ -500,6 +509,7 @@ function startScreen() {
       <p class="subtitle">אחרי שיעור 2 · צבעים 🎈</p>
       <button class="cta" id="startBtn">▶ בואי נשחק!</button>
       <div class="navrow"><a class="navlink" href="lesson2.html">🎨 שיעור 2: צבעים</a> <a class="navlink" href="index.html">🐶 שיעור 1: חיות</a></div>
+      <div class="pwaSlot"></div>
       <details class="parent">
         <summary>להורים 💛</summary>
         <p>משחק האזנה קצר אחרי שיעור הצבעים: לילי אומרת צבע באנגלית, ומיה לוחצת על הבלון הנכון. שלושה סבבים שמהירים, בלי קריאה ובלי הקלדה.</p>
@@ -608,5 +618,6 @@ async function finale(s) {
 startScreen();
 </script>
 <script src="lipsync.js?v=2"></script>
+<script src="pwa.js?v=1"></script>
 </body>
 </html>
