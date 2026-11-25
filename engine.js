@@ -124,6 +124,7 @@ const Player = (() => {
         player.onended = () => finish(true);
         player.onerror = () => retryOrFail("error");
         try { player.src = u; } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent("clipplay", { detail: { key: key, el: player } })); } catch (e) {} // lip-sync (lipsync.js)
         const p = player.play();
         if (p && p.catch) p.catch((e) => retryOrFail(String(e && e.name || e)));
       };
@@ -188,6 +189,7 @@ const Sfx = (() => {
     tap() { tone(660, 0, .12, "sine", .1); },
     good() { tone(523, 0, .16); tone(659, .12, .16); tone(784, .24, .3); },
     wrong() { tone(300, 0, .2, "triangle", .12); tone(240, .15, .3, "triangle", .1); },
+    soft() { tone(440, 0, .14, "sine", .07); tone(523, .1, .18, "sine", .06); },
     star() { tone(880, 0, .12); tone(1175, .09, .2); },
     fanfare() { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .14, .3)); tone(1319, .6, .5); }
   };
@@ -217,9 +219,60 @@ const alive = s => s === session;
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 function setBubble(html) { bubble.innerHTML = html; }
+/* picture for a word. Two-digit keycap emoji (1️⃣1️⃣) are too wide for the cards on
+   small phones, so numbers are drawn as one big chunky numeral in the word's colour. */
+function emoHtml(w) {
+  const e = (w && w.emo) || "";
+  if (/\u20E3/.test(e)) return '<span class="numart" style="color:' + (w.color || "#4A3B31") + '">' + e.replace(/[^0-9]/g, "") + "</span>";
+  return e;
+}
+/* ---------- friendly progress path: Lili walks from start to the trophy ---------- */
+const PHASES = { learn: [0.03, 0.32], g1: [0.36, 0.28], g2: [0.66, 0.28] };
+let curPhase = PHASES.g1;
+function pathTo(frac) {
+  const p = Math.max(0, Math.min(1, frac));
+  const fill = document.getElementById("pathFill"), walker = document.getElementById("pathWalker");
+  if (fill) fill.style.width = (p * 100) + "%";
+  if (walker) walker.style.insetInlineStart = "calc(" + (p * 100) + "% - " + (p * 26) + "px)";
+  document.getElementById("lessonPath")?.setAttribute("aria-valuenow", String(Math.round(p * 100)));
+}
+function phaseProgress(done, total) { pathTo(curPhase[0] + curPhase[1] * (total ? done / total : 0)); }
+(function mountPath() {
+  const top = document.getElementById("topbar");
+  if (!top || document.getElementById("lessonPath")) return;
+  const d = document.createElement("div");
+  d.id = "lessonPath";
+  d.setAttribute("role", "progressbar"); d.setAttribute("aria-label", "התקדמות בשיעור");
+  d.setAttribute("aria-valuemin", "0"); d.setAttribute("aria-valuemax", "100"); d.setAttribute("aria-valuenow", "0");
+  d.innerHTML = '<div class="track"><div class="fill" id="pathFill"></div></div><span class="walker" id="pathWalker" aria-hidden="true">🦉</span><span class="goal" aria-hidden="true">🏆</span>';
+  top.insertAdjacentElement("afterend", d);
+})();
+
+/* ---------- wrong answers: warm, quiet, never a "failure" ---------- */
+// the tapped card wiggles softly and shows a heart; after two misses in a round the right
+// card starts to glow so she always ends the round with a success
+let tally = { rounds: 0, firstTry: 0 };
+function gentleMiss(el, okEl) {
+  Sfx.soft();
+  const box = el.parentElement;
+  if (box) { box.__missed = (box.__missed || 0) + 1; }
+  el.classList.add("miss");
+  const h = document.createElement("span");
+  h.className = "missHeart"; h.textContent = "💛"; h.setAttribute("aria-hidden", "true");
+  el.appendChild(h);
+  setTimeout(() => h.remove(), 1100);
+  if (okEl && box && box.__missed >= 2) okEl.classList.add("hintGlow");
+}
+
+/* ---------- guide character ----------
+   The avatar picture, its fallback and the lip-sync live in lipsync.js (shared with
+   lessons 1-2 and the balloon game). It mounts itself into every .owl / .avatarSlot. */
+
 function setSeg(id) { const el = document.getElementById(id); if (el) el.classList.add("on"); }
 function addStar(fromEl) {
   stars++;
+  tally.rounds++;
+  if (!(fromEl && fromEl.parentElement && fromEl.parentElement.__missed)) tally.firstTry++;
   if (fromEl) {
     const r = fromEl.getBoundingClientRect(), chip = document.getElementById("starsChip").getBoundingClientRect();
     const s = document.createElement("div");
@@ -260,6 +313,11 @@ function confetti(n) {
   }
 }
 
+// game hints that show 🔊 replay the question when tapped (they say "tap to hear again")
+stage.addEventListener("click", e => {
+  if (e.target.closest && e.target.closest(".hint.replay") && lastPrompt) { Sfx.tap(); replayLine(lastPrompt); }
+});
+repeatBtn.setAttribute("aria-label", "שמעי שוב");
 repeatBtn.addEventListener("click", () => {
   if (!lastPrompt) return;
   replayLine(lastPrompt);
@@ -297,9 +355,13 @@ function startScreen() {
   document.getElementById("startBtn").addEventListener("click", () => { Sfx.tap(); Speech.unlock(); Player.unlock(); intro(); });
 }
 
+let lessonStartedAt = 0;
 async function intro() {
   const s = ++session;
   setSeg("seg-learn");
+  tally = { rounds: 0, firstTry: 0 };
+  lessonStartedAt = Date.now();
+  curPhase = PHASES.learn; pathTo(0);
   repeatBtn.style.visibility = "visible";
   stage.innerHTML = "";
   await speakLines([
@@ -315,9 +377,10 @@ async function teachWord(i, s) {
   if (!alive(s)) return;
   if (i >= WORDS.length) return game1Intro(s);
   const a = WORDS[i];
+  curPhase = PHASES.learn; phaseProgress(i, WORDS.length);
   stage.innerHTML = `
     <div class="bigcard" id="bigcard" style="border-color:${a.color}">
-      <div class="emo">${a.emo}</div>
+      <div class="emo">${emoHtml(a)}</div>
       <div class="word">${a.en}</div>
     </div>
     <div class="hint">לחצי על התמונה כדי לשמוע שוב 🔊</div>`;
@@ -345,8 +408,11 @@ async function teachWord(i, s) {
   const moveIdx = (i === 1) ? 0 : (i === 3) ? 1 : -1;
   if (moveIdx >= 0 && LESSON.moves[moveIdx]) {
     const mv = LESSON.moves[moveIdx];
+    const mvEmo = (String(mv.html).match(/\p{Extended_Pictographic}/gu) || ["🤸"]).slice(-1)[0];
+    stage.innerHTML = `<div class="moveCard" aria-hidden="true"><div class="moveEmo"><span>🤸‍♀️</span><span>${mvEmo}</span></div><div class="moveTimer"><div id="moveBar"></div></div></div>`;
     await speakLines([{ key: mv.key, t: mv.t, lang: "he", html: mv.html }], s);
     if (!alive(s)) return;
+    document.getElementById("moveBar")?.classList.add("run");
     await sleep(3500);
   }
   if (!alive(s)) return;
@@ -360,6 +426,7 @@ function optionsRow(target, count, pool) {
 
 async function game1Intro(s) {
   setSeg("seg-g1");
+  curPhase = PHASES.g1; phaseProgress(0, 1);
   stage.innerHTML = "";
   await speakLines([
     { key: "he/g1intro1", t: "וואו, למדנו חמש מילים חדשות!", lang: "he", html: "חמש מילים חדשות! 🌟", pauseAfter: 400 },
@@ -381,6 +448,7 @@ async function game2Intro(s) {
   };
   const ic = introClips[g2] || introClips.tap;
   setSeg("seg-g2");
+  curPhase = PHASES.g2; phaseProgress(0, 1);
   await speakLines([{ key: ic.key, t: ic.t, lang: "he", html: ic.html }], s);
   if (!alive(s)) return;
   if (g2 === "tap") tapGame(s, false, shuffle(WORDS), recap);
@@ -397,11 +465,12 @@ function tapGame(s, withPrompt, order, doneCb) {
   const play = async () => {
     if (!alive(s)) return;
     if (round >= order.length) return doneCb(s);
+    phaseProgress(round, order.length);
     const target = order[round];
     const opts = optionsRow(target, 3);
     stage.innerHTML = `<div class="optgrid">${opts.map(o =>
-      `<div class="opt" data-en="${o.en}" style="border-color:${o.color}33"><div class="emo">${o.emo}</div></div>`).join("")}</div>
-      <div class="hint">${withPrompt ? "איפה ה..." : "מה שמעת?"} 🔊 לחצי עליי לשמוע שוב</div>`;
+      `<div class="opt" data-en="${o.en}" style="border-color:${o.color}33"><div class="emo">${emoHtml(o)}</div></div>`).join("")}</div>
+      <div class="hint replay" role="button">${withPrompt ? "איפה ה..." : "מה שמעת?"} 🔊 לחצי עליי לשמוע שוב</div>`;
     await sleep(500);
     if (!alive(s)) return;
     if (withPrompt) {
@@ -427,17 +496,16 @@ function tapGame(s, withPrompt, order, doneCb) {
           el.classList.add("right");
           Sfx.good(); Sfx.star(); cheer();
           addStar(el);
-          await speakLines([praiseLine("🌟 " + el.querySelector(".emo").textContent + ' <span class="en">' + target.en + '</span>!')], s);
+          await speakLines([praiseLine("🌟 " + target.emo + ' <span class="en">' + target.en + '</span>!')], s);
           if (!alive(s)) return;
           round++;
           play();
         } else {
           locked = true;
           el.classList.add("wrong");
-          Sfx.wrong();
-          stage.querySelector(".optgrid")?.classList.add("shake");
+          gentleMiss(el, stage.querySelector('.opt[data-en="' + target.en + '"]'));
           await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
-          setTimeout(() => { stage.querySelector(".optgrid")?.classList.remove("shake"); locked = false; }, 300);
+          setTimeout(() => { locked = false; }, 300);
           if (!alive(s)) return;
           if (withPrompt) { owl.classList.add("talking"); await sayLine({ key: "he/where", t: "איפה ה", lang: "he" }); await sayLine({ key: "en/" + target.en, t: target.en + "?", lang: "en" }); owl.classList.remove("talking"); }
           else { owl.classList.add("talking"); await sayLine({ key: "en/" + target.en, t: target.en, lang: "en" }); owl.classList.remove("talking"); }
@@ -456,11 +524,12 @@ function catchGame(s, order, doneCb) {
   const play = async () => {
     if (!alive(s)) return;
     if (round >= order.length) { stopMovers(); return doneCb(s); }
+    phaseProgress(round, order.length);
     const target = order[round];
     const opts = optionsRow(target, 4);
     stage.innerHTML = `<div id="catchField">${opts.map(o =>
-      `<div class="floater" data-en="${o.en}">${o.emo}</div>`).join("")}</div>
-      <div class="hint">תפסי את ה... 🔊</div>`;
+      `<div class="floater" data-en="${o.en}">${emoHtml(o)}</div>`).join("")}</div>
+      <div class="hint replay" role="button">תפסי את ה... 🔊</div>`;
     const field = document.getElementById("catchField");
     const W = field.clientWidth, H = field.clientHeight;
     stopMovers();
@@ -498,14 +567,14 @@ function catchGame(s, order, doneCb) {
           el.classList.add("right");
           Sfx.good(); Sfx.star(); cheer();
           addStar(el);
-          await speakLines([praiseLine("🌟 " + el.textContent + ' <span class="en">' + target.en + '</span>!')], s);
+          await speakLines([praiseLine("🌟 " + target.emo + ' <span class="en">' + target.en + '</span>!')], s);
           if (!alive(s)) { stopMovers(); return; }
           round++;
           play();
         } else {
           locked = true;
           el.classList.add("wrongPick");
-          Sfx.wrong();
+          gentleMiss(el, field.querySelector('.floater[data-en="' + target.en + '"]'));
           await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
           locked = false;
           if (!alive(s)) { stopMovers(); return; }
@@ -525,7 +594,7 @@ function memoryGame(s, doneCb) {
   const cards = shuffle(picks.concat(picks));
   let open = [], matched = 0, lock = false;
   stage.innerHTML = `<div class="memgrid">${cards.map((c, i) =>
-    `<button class="memcard" data-en="${c.en}" data-i="${i}" type="button"><div class="inner"><div class="face front">🦉</div><div class="face back">${c.emo}</div></div></button>`).join("")}</div>
+    `<button class="memcard" data-en="${c.en}" data-i="${i}" type="button"><div class="inner"><div class="face front">🦉</div><div class="face back">${emoHtml(c)}</div></div></button>`).join("")}</div>
     <div class="hint">הפכי קלפים ומצאי זוגות זהים 🦉</div>`;
   stage.querySelectorAll(".memcard").forEach(el => {
     el.addEventListener("click", async () => {
@@ -545,12 +614,13 @@ function memoryGame(s, doneCb) {
         Sfx.good(); Sfx.star(); cheer();
         addStar(b);
         matched++;
+        phaseProgress(matched, picks.length);
         lock = false;
         await speakLines([praiseLine('🌟 זוג של <span class="en">' + a.dataset.en + '</span>!')], s);
         if (!alive(s)) return;
         if (matched >= picks.length) { await sleep(600); finishOnce(); }
       } else {
-        Sfx.wrong();
+        Sfx.soft();
         await sleep(700);
         if (!alive(s)) return;
         a.classList.remove("flipped"); b.classList.remove("flipped");
@@ -566,11 +636,12 @@ function oddGame(s, doneCb) {
   const play = async () => {
     if (!alive(s)) return;
     if (round >= LESSON.oddExtras.length) return doneCb(s);
+    phaseProgress(round, LESSON.oddExtras.length);
     const odd = LESSON.oddExtras[round];
     const friends = shuffle(WORDS).slice(0, 3);
     const opts = shuffle(friends.concat([odd]));
     stage.innerHTML = `<div class="optgrid four">${opts.map(o =>
-      `<div class="opt" data-en="${o.en}" style="border-color:${(o.color || "#DDD")}33"><div class="emo">${o.emo}</div></div>`).join("")}</div>
+      `<div class="opt" data-en="${o.en}" style="border-color:${(o.color || "#DDD")}33"><div class="emo">${emoHtml(o)}</div></div>`).join("")}</div>
       <div class="hint">מי לא שייך לחברים? 🤔</div>`;
     await sleep(400);
     if (!alive(s)) return;
@@ -593,10 +664,9 @@ function oddGame(s, doneCb) {
         } else {
           locked = true;
           el.classList.add("wrong");
-          Sfx.wrong();
-          stage.querySelector(".optgrid")?.classList.add("shake");
+          gentleMiss(el, stage.querySelector('.opt[data-en="' + odd.en + '"]'));
           await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
-          setTimeout(() => { stage.querySelector(".optgrid")?.classList.remove("shake"); locked = false; }, 300);
+          setTimeout(() => { locked = false; }, 300);
         }
       });
     });
@@ -612,6 +682,7 @@ function countGame(s, order, doneCb) {
   const play = async () => {
     if (!alive(s)) return;
     if (round >= order.length) return doneCb(s);
+    phaseProgress(round, order.length);
     const word = order[round];
     const targetCount = numberStart ? numberStart + WORDS.findIndex(w => w.en === word.en) : round + 1;
     const targetName = numberStart ? word.en : NUMS[targetCount - 1];
@@ -619,7 +690,7 @@ function countGame(s, order, doneCb) {
     const counts = shuffle([targetCount, ...shuffle(candidates.filter(n => n !== targetCount)).slice(0, 2)]);
     stage.innerHTML = `<div class="countgrid">${counts.map(n =>
       `<div class="countopt" data-n="${n}">${numberStart ? `<div class="dotgroup">${Array(n).fill('<span class="countdot"></span>').join("")}</div>` : Array(n).fill(`<span class="emo">${word.emo}</span>`).join("")}<span class="badge">${n}</span></div>`).join("")}</div>
-      <div class="hint">כמה דברים את רואה? 🔊</div>`;
+      <div class="hint replay" role="button">כמה דברים את רואה? 🔊</div>`;
     await sleep(500);
     if (!alive(s)) return;
     await speakLines([
@@ -644,10 +715,9 @@ function countGame(s, order, doneCb) {
         } else {
           locked = true;
           el.classList.add("wrong");
-          Sfx.wrong();
-          stage.querySelector(".countgrid")?.classList.add("shake");
+          gentleMiss(el, stage.querySelector('.countopt[data-n="' + targetCount + '"]'));
           await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
-          setTimeout(() => { stage.querySelector(".countgrid")?.classList.remove("shake"); locked = false; }, 300);
+          setTimeout(() => { locked = false; }, 300);
           if (!alive(s)) return;
           owl.classList.add("talking"); await sayLine({ key: "he/where", t: "איפה ה", lang: "he" }); await sayLine({ key: "en/" + targetName, t: targetName + "?", lang: "en" }); owl.classList.remove("talking");
         }
@@ -665,11 +735,12 @@ function sentenceGame(s, order, doneCb) {
   const play = async () => {
     if (!alive(s)) return;
     if (round >= order.length) return doneCb(s);
+    phaseProgress(round, order.length);
     const target = order[round];
     const opts = optionsRow(target, 3);
     stage.innerHTML = `<div class="sentCard" dir="ltr">I see a <span class="en">${target.en}</span> ${target.emo}</div>
       <div class="optgrid">${opts.map(o =>
-      `<div class="opt" data-en="${o.en}" style="border-color:${o.color}33"><div class="emo">${o.emo}</div></div>`).join("")}</div>
+      `<div class="opt" data-en="${o.en}" style="border-color:${o.color}33"><div class="emo">${emoHtml(o)}</div></div>`).join("")}</div>
       <div class="hint">👂 הקשיבי למשפט ומצאי את התמונה</div>`;
     await sleep(500);
     if (!alive(s)) return;
@@ -695,10 +766,9 @@ function sentenceGame(s, order, doneCb) {
         } else {
           locked = true;
           el.classList.add("wrong");
-          Sfx.wrong();
-          stage.querySelector(".optgrid")?.classList.add("shake");
+          gentleMiss(el, stage.querySelector('.opt[data-en="' + target.en + '"]'));
           await speakLines([{ key: "he/wrong", t: "אופסי, זה לא זה. נסי שוב!", lang: "he", html: "אופסי, נסי שוב! 💪" }], s);
-          setTimeout(() => { stage.querySelector(".optgrid")?.classList.remove("shake"); locked = false; }, 300);
+          setTimeout(() => { locked = false; }, 300);
           if (!alive(s)) return;
           owl.classList.add("talking"); await sayLine({ key: "en/iseea", t: "I see a", lang: "en" }); await sayLine({ key: "en/" + target.en, t: target.en + ".", lang: "en" }); owl.classList.remove("talking");
         }
@@ -711,8 +781,9 @@ function sentenceGame(s, order, doneCb) {
 /* ---------- recap + finale ---------- */
 async function recap(s) {
   setSeg("seg-end");
+  pathTo(0.97);
   stage.innerHTML = `<div class="parade">${WORDS.map(a =>
-    `<div class="pitem" id="p-${a.en.replace(/\s/g, "_")}"><div class="emo">${a.emo}</div><div class="word">${a.en}</div></div>`).join("")}</div>`;
+    `<div class="pitem" id="p-${a.en.replace(/\s/g, "_")}"><div class="emo">${emoHtml(a)}</div><div class="word">${a.en}</div></div>`).join("")}</div>`;
   await speakLines([{ key: "he/recap", t: "בואי נזכור מה למדנו היום!", lang: "he", html: "מה למדנו היום? 🌈", pauseAfter: 300 }], s);
   for (const a of WORDS) {
     if (!alive(s)) return;
@@ -735,23 +806,35 @@ async function finale(s) {
   Sfx.fanfare();
   confetti(70);
   const f2 = LESSON.finale2 || "למדנו היום חמש מילים חדשות באנגלית!";
+  const nextL = (typeof LESSONS !== "undefined" && LESSONS[LESSON.id + 1]) || null;
+  const mins = Math.max(1, Math.round((Date.now() - (lessonStartedAt || Date.now())) / 60000));
+  pathTo(1);
   stage.innerHTML = `
     <div id="finaleWrap">
-      <div class="sticker">${LESSON.medal || "🏅"}</div>
+      <div class="finaleHero"><div class="avatarSlot finaleAvatar"></div><div class="sticker">${LESSON.medal || "🏅"}</div></div>
       <div class="starRow">${Array(Math.min(stars, 10)).fill(0).map((_, i) => `<span style="animation-delay:${i * 0.12}s">⭐</span>`).join("")}</div>
       <p class="title">כל הכבוד ${MIA}!</p>
       <p class="subtitle">סיימנו שיעור שלם באנגלית!</p>
-      <button class="cta" id="againBtn">🔁 עוד פעם</button>
+      ${nextL ? `<a class="cta coral" id="nextBtn" href="lesson${nextL.id}.html" style="text-decoration:none">▶ שיעור ${nextL.id}: ${nextL.topic} ${nextL.emoji}</a>` : ""}
+      <button class="cta" id="againBtn" type="button">🔁 עוד פעם</button>
       <a class="navlink" href="lessons.html" style="margin-top:12px">🏠 כל השיעורים</a>
+      <details class="parent summary">
+        <summary>להורים: מה למדנו היום 💛</summary>
+        <p>${LESSON.topic} ${LESSON.emoji} · ${mins} דק׳ · ⭐ ${stars} · ${tally.firstTry} מתוך ${tally.rounds} תשובות נכונות כבר בניסיון הראשון</p>
+        <div class="sumWords">${WORDS.map(w => `<button type="button" class="sumWord" data-en="${w.en}"><span class="e" aria-hidden="true">${w.emo}</span><span class="w" dir="ltr">${w.en}</span><span class="h">${w.he}</span></button>`).join("")}</div>
+        <p class="tip">לחצו על מילה כדי לשמוע אותה שוב. רעיון לבית: הצביעו על חפץ ושאלו את מיה איך אומרים אותו באנגלית.</p>
+      </details>
     </div>`;
-  try { localStorage.setItem("mia-english-lesson" + LESSON.id, JSON.stringify({ done: true, stars: stars, at: Date.now() })); } catch (e) {}
+  try { localStorage.setItem("mia-english-lesson" + LESSON.id, JSON.stringify({ done: true, stars: stars, at: Date.now(), firstTry: tally.firstTry, rounds: tally.rounds, mins: mins })); } catch (e) {}
+  stage.querySelectorAll(".sumWord").forEach(b => b.addEventListener("click", () => { Sfx.tap(); session++; replayLine({ key: "en/" + b.dataset.en, t: b.dataset.en, lang: "en" }); }));
+  // wire the buttons now, not after the closing speech: a tap during the goodbye must work
+  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id)?.classList.remove("on")); intro(); });
+  document.getElementById("nextBtn")?.addEventListener("click", () => { session++; Player.stop(); });
   await speakLines([
     { key: "he/finale1", t: "כל הכבוד " + MIA + "! סיימנו שיעור שלם באנגלית!", lang: "he", html: "כל הכבוד " + MIA + "! 🏅", pauseAfter: 300 },
     { key: LESSON.finale2key || "he/finale2", t: f2, lang: "he", html: WORDS.map(w => w.en).join(" · "), pauseAfter: 300 },
     { key: "he/finale3", t: "מיה, אלופת האנגלית! נתראה בשיעור הבא! ביי ביי!", lang: "he", html: "מיה, אלופת האנגלית! 👋💛" }
   ], s);
-  if (!alive(s)) return;
-  document.getElementById("againBtn")?.addEventListener("click", () => { Sfx.tap(); stars = 0; document.getElementById("starCount").textContent = 0; ["seg-learn", "seg-g1", "seg-g2", "seg-end"].forEach(id => document.getElementById(id)?.classList.remove("on")); intro(); });
 }
 
 startScreen();

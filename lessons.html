@@ -4,29 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>האנגלית של מיה - כל השיעורים</title>
-<link rel="stylesheet" href="engine.css?v=1">
+<link rel="stylesheet" href="engine.css?v=2">
 </head>
-<body>
+<body class="pickerPage">
 <div class="cloud c1"></div><div class="cloud c2"></div>
 <div id="app">
   <div id="picker">
+    <div class="avatarSlot heroAvatar" aria-hidden="true"></div>
     <h1>האנגלית של מיה 🦉</h1>
     <p class="sub">בחרי שיעור, מיה! 💛</p>
     <div class="pickgrid" id="grid"></div>
+    <details class="parent pickSummary" id="parentSum">
+      <summary>להורים: מה מיה כבר למדה 💛</summary>
+      <div id="sumBody"></div>
+    </details>
   </div>
 </div>
-<script src="lessons-data.js?v=1"></script>
+<script src="lessons-data.js?v=2"></script>
 <script src="live-lessons.js?v=1"></script>
+<script src="lipsync.js?v=1"></script>
 <script>
 "use strict";
 const OLD = {
-  1: { topic: "חיות", emoji: "🐶", href: "index.html" },
-  2: { topic: "צבעים", emoji: "🎨", href: "lesson2.html" },
-  3: { topic: "מספרים", emoji: "🔢", href: "lesson3.html" }
+  1: { topic: "חיות", emoji: "🐶", href: "index.html", words: ["dog", "cat", "bird", "fish", "rabbit"] },
+  2: { topic: "צבעים", emoji: "🎨", href: "lesson2.html", words: ["red", "blue", "yellow", "green", "purple"] },
+  3: { topic: "מספרים", emoji: "🔢", href: "lesson3.html", words: ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"] }
 };
 const upcomingTopics = ["צורות","רגשות","מזג אוויר","חלקי היום","חיות חווה","חיות ים","יצורים קטנים","פעולות","עוד פעולות","טבע","בבית","אוכל","בית ספר","הפכים","מקומות","היגיינה","יום הולדת","כלי אוכל","חזרה 1","חזרה 2"];
 const grid = document.getElementById("grid");
 let html = "";
+let nextMarked = false;
 for (let i = 1; i <= 33; i++) {
   const live = (typeof LIVE_LESSONS !== "undefined") && LIVE_LESSONS.includes(i);
   let topic, emoji, href, storageKey;
@@ -37,14 +44,44 @@ for (let i = 1; i <= 33; i++) {
     const p = JSON.parse(localStorage.getItem(storageKey) || "null");
     if (p && p.done) stars = '<div class="st">⭐ ' + (p.stars || 0) + '</div>';
   } catch (e) {}
-  const cls = "pickcard" + (stars ? " done" : "") + (live ? "" : " soon");
+  // the first recorded lesson she has not finished yet gets a gentle "next" glow
+  const isNext = live && !stars && !nextMarked;
+  if (isNext) nextMarked = true;
+  const cls = "pickcard" + (stars ? " done" : "") + (live ? "" : " soon") + (isNext ? " next" : "");
   const label = live ? ("שיעור " + i) : "בקרוב ✨";
-  html += '<a class="' + cls + '" href="' + (live ? href : "#") + '">' +
-    '<div class="emo">' + emoji + '</div>' +
+  // keep number ranges such as 11-15 together and left-to-right inside the Hebrew label
+  const topicHtml = String(topic).replace(/(\d+\s*-\s*\d+)/g, '<bdi class="nw">$1</bdi>');
+  html += '<a class="' + cls + '" href="' + (live ? href : "#") + '"' + (live ? '' : ' aria-disabled="true" tabindex="-1"') + '>' +
+    (isNext ? '<span class="nextTag">▶ הבא</span>' : '') +
+    '<div class="emo" aria-hidden="true">' + emoji + '</div>' +
     '<div class="nm">' + label + '</div>' +
-    '<div class="nm" style="font-weight:600;opacity:.7">' + topic + '</div>' + stars + '</a>';
+    '<div class="nm" style="font-weight:600;opacity:.7">' + topicHtml + '</div>' + stars + '</a>';
 }
 grid.innerHTML = html;
+
+// parent summary: finished lessons, when, stars and the English words covered
+(function () {
+  const rows = [];
+  let total = 0;
+  for (let i = 1; i <= 33; i++) {
+    let p = null;
+    try { p = JSON.parse(localStorage.getItem("mia-english-lesson" + i) || "null"); } catch (e) {}
+    if (!p || !p.done) continue;
+    const L = i <= 3 ? OLD[i] : LESSONS[i];
+    if (!L) continue;
+    const words = i <= 3 ? L.words : L.words.map(w => w.en);
+    total += words.length;
+    const when = p.at ? new Date(p.at).toLocaleDateString("he-IL", { day: "numeric", month: "numeric" }) : "";
+    const first = (p.rounds ? " · " + p.firstTry + "/" + p.rounds + " בניסיון ראשון" : "");
+    rows.push('<div class="sumRow"><b>' + L.emoji + " שיעור " + i + " · " + L.topic.replace(/(\d+\s*-\s*\d+)/g, '<bdi class="nw">$1</bdi>') + '</b>' +
+      '<span class="meta">' + (when ? when + " · " : "") + "⭐ " + (p.stars || 0) + first + '</span>' +
+      '<span class="ws" dir="ltr">' + words.join(" · ") + '</span></div>');
+  }
+  document.getElementById("sumBody").innerHTML = rows.length
+    ? '<p class="sumTotal">' + rows.length + " שיעורים הושלמו · " + total + " מילים באנגלית</p>" + rows.join("")
+    : '<p class="sumTotal">עוד לא הושלם שיעור. אחרי כל שיעור יופיע כאן מה מיה למדה.</p>';
+})();
+document.querySelector(".pickcard.next")?.scrollIntoView({ block: "center" });
 </script>
 </body>
 </html>
